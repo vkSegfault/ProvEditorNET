@@ -1,0 +1,6 @@
+@ProvEditorNET_HostAddress = http://localhost:5077
+
+GET {{ProvEditorNET_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
