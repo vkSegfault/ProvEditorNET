@@ -5,6 +5,7 @@ namespace ProvEditorNET.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+// [Authorize]  - we can secure whole controller instead particular endpoints
 public class ProvinceController: ControllerBase
 {
     [HttpGet("healthcheck", Name = "Healthcheck")]
@@ -31,7 +32,8 @@ public class ProvinceController: ControllerBase
     //   "twoFactorRecoveryCode": "string"
     // }'
     // we can now access any secured endpoint
-    [HttpGet(Name = "GetProvinces"), Authorize]
+    [HttpGet(Name = "GetProvinces")]
+    [Authorize]
     public async Task<ActionResult<List<String>>> GetAllProvinces()
     {
         var provinces = new List<String>{ "pomerania", "masovia" };
