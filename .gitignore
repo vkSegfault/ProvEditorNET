@@ -42,3 +42,6 @@ obj/
 msbuild.log
 msbuild.err
 msbuild.wrn
+
+# Migrations
+Migrations/

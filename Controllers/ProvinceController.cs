@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.Marshalling;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,6 +30,7 @@ public class ProvinceController: ControllerBase
     //   "twoFactorCode": "string",
     //   "twoFactorRecoveryCode": "string"
     // }'
+    // we can now access any secured endpoint
     [HttpGet(Name = "GetProvinces"), Authorize]
     public async Task<ActionResult<List<String>>> GetAllProvinces()
     {

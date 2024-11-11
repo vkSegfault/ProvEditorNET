@@ -11,7 +11,7 @@ using ProvEditorNET.Repository;
 
 namespace ProvEditorNET.Migrations
 {
-    [DbContext(typeof(UserDbContext))]
+    [DbContext(typeof(IdentityDbContext))]
     [Migration("20241111090908_init")]
     partial class init
     {
