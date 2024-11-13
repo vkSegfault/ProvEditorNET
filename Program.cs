@@ -66,6 +66,12 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddEntityFrameworkStore
 //     googleOptions.ClientSecret = "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";
 // });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigin", policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowSpecificOrigin", policyBuilder => policyBuilder.WithOrigins("localhost").AllowAnyMethod().AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -73,7 +79,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("AllowAllOrigin");
     // app.ApplyMigrations();   // TODO - what package ?
+}
+else
+{
+    app.UseCors("AllowSpecificOrigin");
 }
 
 app.MapIdentityApi<IdentityUser>();   // used for crude Authorization directly from Identity package (without any custom changes)

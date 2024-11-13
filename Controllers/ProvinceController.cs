@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace ProvEditorNET.Controllers;
 
@@ -39,6 +40,8 @@ public class ProvinceController: ControllerBase
         var provinces = new List<String>{ "pomerania", "masovia" };
         provinces.Add("silesia");
 
+        // TODO - remove thread sleep - just used for testing frontend delays
+        Thread.Sleep(2000);
         return Ok(provinces);
     }
 }
