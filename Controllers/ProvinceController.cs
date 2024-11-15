@@ -6,10 +6,11 @@ namespace ProvEditorNET.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-// [Authorize]  - we can secure whole controller instead particular endpoints
+[Authorize]
 public class ProvinceController: ControllerBase
 {
     [HttpGet("healthcheck", Name = "Healthcheck")]
+    [AllowAnonymous]   // make this endpoint accessible without authorization 
     public async Task<ActionResult<Boolean>> Healthcheck()
     {
         return Ok(true);
