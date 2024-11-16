@@ -11,7 +11,10 @@ public class GoogleAuth : IGoogleAuth
         try
         {
             GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(token);
-            return payload;
+            if ( payload != null || string.IsNullOrEmpty(payload.Email) )
+            {
+                return payload;
+            }
         }
         catch (Exception e)
         {
@@ -19,5 +22,14 @@ public class GoogleAuth : IGoogleAuth
         }
 
         return null;
+    }
+
+    public async Task<string> AuthorizeAccessToken(string token)
+    {
+        Console.WriteLine(token);
+        using var httpClient = new HttpClient();
+        var res = httpClient.GetAsync($"https://www.googleapis.com//oauth2/v3/userinfo?{token}", HttpCompletionOption.ResponseContentRead);
+
+        return String.Empty;
     }
 }

@@ -39,6 +39,7 @@ public class AuthController : ControllerBase
         {
             JObject requestBodyJson = JObject.Parse( requestBody.ToString() );
             string idToken = requestBodyJson["idToken"]?.ToString();
+            string accessToken = requestBodyJson["accessToken"]?.ToString();
 
             if (idToken is not null)
             {
@@ -50,9 +51,13 @@ public class AuthController : ControllerBase
                 }
                 else
                 {
-                    Console.WriteLine("Payload: " + payload.Name);
+                    Console.WriteLine("Payload.Name: " + payload.Name);
                     return Ok(payload);
                 }
+            }
+            else if (accessToken is not null)
+            {
+                await _googleAuth.AuthorizeAccessToken(accessToken);
             }
             else
             {
