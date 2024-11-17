@@ -39,6 +39,6 @@ public class GoogleAuth : IGoogleAuth
         var jsonRes = await res.Content.ReadAsStringAsync();
         Console.WriteLine("Response calling www.googleapis.com/oauth2/v3/userinfo: " + jsonRes);
 
-        return String.Empty;
+        return jsonRes;
     }
 }

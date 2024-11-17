@@ -18,6 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IGoogleAuth, GoogleAuth>();
+builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -29,12 +30,10 @@ builder.Services.AddSwaggerGen(options =>
     
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-
 builder.Services.AddDbContext<IdentityDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.SignIn.RequireConfirmedEmail = true;

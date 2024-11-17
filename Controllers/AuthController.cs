@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using ProvEditorNET.Interfaces;
+using ProvEditorNET.Models;
 
 namespace ProvEditorNET.Controllers;
 
@@ -13,10 +14,12 @@ namespace ProvEditorNET.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IGoogleAuth _googleAuth;
+    private readonly IIdentityService _identityService;
 
-    public AuthController(IGoogleAuth googleAuth)
+    public AuthController(IGoogleAuth googleAuth, IIdentityService identityService)
     {
         _googleAuth = googleAuth;
+        _identityService = identityService;
     }
     
     
@@ -32,40 +35,56 @@ public class AuthController : ControllerBase
         // _identityDBRepository.userExsits?( userProfileGoole.email )
         // if exists call login endpoint and send new Bearer token to frontend
         // if not call /register endpoint
+
         
         Console.WriteLine(requestBody);
         if (requestBody is null)
         {
             return BadRequest("Request body is null");
         }
-        else
-        {
-            JObject requestBodyJson = JObject.Parse( requestBody.ToString() );
-            string idToken = requestBodyJson["idToken"]?.ToString();
-            string accessToken = requestBodyJson["accessToken"]?["access_token"]?.ToString();
 
-            if (idToken is not null)
+        UserProfileGoogle user;
+        
+        JObject requestBodyJson = JObject.Parse( requestBody.ToString() );
+        string idToken = requestBodyJson["idToken"]?.ToString();
+        string accessToken = requestBodyJson["accessToken"]?["access_token"]?.ToString();
+
+        // handle idToken
+        if (idToken is not null)
+        {
+            Console.WriteLine($"Validating Google Access token: {idToken}");
+            GoogleJsonWebSignature.Payload payload = await _googleAuth.AuthenticateIdToken(idToken);
+            if (payload is null )
             {
-                Console.WriteLine($"Validating Google Access token: {idToken}");
-                GoogleJsonWebSignature.Payload payload = await _googleAuth.AuthenticateIdToken(idToken);
-                if (payload is null )
-                {
-                    return BadRequest("Invalid token");
-                }
-                else
-                {
-                    Console.WriteLine("Payload.Name: " + payload.Name);
-                    return Ok(payload);
-                }
-            }
-            else if (accessToken is not null)
-            {
-                await _googleAuth.AuthorizeAccessToken(accessToken);
+                return BadRequest("Invalid token");
             }
             else
             {
-                return BadRequest("No access_token in request body");
+                bool exists = await _identityService.UserExistsAsync(payload.Email);
+
+                if (exists)
+                {
+                    Console.WriteLine("User already exists - login in");
+                    // login him/generate bearer token (how to generate one without calling /login or how to login without password?)
+                }
+                else
+                {
+                    Console.WriteLine("User doesn't exist - signing in");
+                    // call register (but how to register without password?)
+                }
+                Console.WriteLine("Payload.Name: " + payload.Name);
+                return Ok(payload);
             }
+        }
+        
+        // handle accessToken
+        if (accessToken is not null)
+        {
+            await _googleAuth.AuthorizeAccessToken(accessToken);
+        }
+        else
+        {
+            return BadRequest("No access_token in request body");
         }
 
         // TODO - remove thread sleep - just used for testing frontend delays
