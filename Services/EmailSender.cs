@@ -19,7 +19,10 @@ public class EmailSender : IEmailSender
         var sendGridApiKey = _configuration["Authentication:SendGrid:ApiKey"];
         var client = new SendGridClient(sendGridApiKey);
         var from = new EmailAddress("adtofaust@gmail.com", "ProvEditor");
-        var to = new EmailAddress(email, "Hello New User");
+        // ProvEditor must be only accessible by handful of people so every new user must be approved by admin (here me)
+        // we can also create roles instead -> this way everyone can register but by default will have only visibility access to endpoint, no possibility to add/edit etc
+        // var to = new EmailAddress(email, "New User Approval needed");
+        var to = new EmailAddress("adtofaust@gmail.com", "New User Approval needed");
         var plainTextContent = message;
         var htmlContent = $"<strong>{message}</strong>";
         var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);

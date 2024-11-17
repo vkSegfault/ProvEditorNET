@@ -7,11 +7,6 @@ using ProvEditorNET.Interfaces;
 
 namespace ProvEditorNET.Controllers;
 
-// idToken sent from client (frontend) let us AUTHENTICATE user
-// accessToken sent from client (frontend) let us AUTHORIZE user
-// ************
-// once we get idToken we just confirms who he is (and if the idToken is correct)
-// 
 
 [ApiController]
 [Route("api/v1/[controller]/[action]")]
@@ -30,6 +25,14 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult> AuthorizeGoogleSso([FromBody] object requestBody)
     {
+        // TODO
+        // new userProfileGoogle - create new model class
+        // TODO
+        // var userProfileGoole = getUserData( idToken || accessToken )
+        // _identityDBRepository.userExsits?( userProfileGoole.email )
+        // if exists call login endpoint and send new Bearer token to frontend
+        // if not call /register endpoint
+        
         Console.WriteLine(requestBody);
         if (requestBody is null)
         {
@@ -39,7 +42,7 @@ public class AuthController : ControllerBase
         {
             JObject requestBodyJson = JObject.Parse( requestBody.ToString() );
             string idToken = requestBodyJson["idToken"]?.ToString();
-            string accessToken = requestBodyJson["accessToken"]?.ToString();
+            string accessToken = requestBodyJson["accessToken"]?["access_token"]?.ToString();
 
             if (idToken is not null)
             {
