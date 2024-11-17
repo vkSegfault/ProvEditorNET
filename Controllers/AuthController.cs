@@ -60,7 +60,8 @@ public class AuthController : ControllerBase
             }
             else
             {
-                bool exists = await _identityService.UserExistsAsync(payload.Email);
+                // bool exists = await _identityService.UserExistsAsync(payload.Email);
+                bool exists = await _identityService.UserExistsAsync("gonzo@gonzo.com");
 
                 if (exists)
                 {
@@ -71,6 +72,8 @@ public class AuthController : ControllerBase
                 {
                     Console.WriteLine("User doesn't exist - signing in");
                     // call register (but how to register without password?)
+                    // await _identityService.RegisterUserAsync( payload.Email, "" );
+                    await _identityService.RegisterUserAsync( "gonzo@gonzo.com", "" );
                 }
                 Console.WriteLine("Payload.Name: " + payload.Name);
                 return Ok(payload);

@@ -28,4 +28,22 @@ public class IdentityService : IIdentityService
         }
         
     }
+
+    public async Task RegisterUserAsync(string email, string password)
+    {
+        // we cannot call /register endpoint directly because we set globally it needs password and for SSO we don't use password - we authenticate with idToken instead
+        // we add user to DB instead
+        IdentityUser user = new IdentityUser();
+        user.UserName = email;
+        user.NormalizedUserName = email.ToUpper();
+        user.Email = email;
+        user.NormalizedEmail = email.ToUpper();
+        user.LockoutEnabled = true;
+        
+        await _identityRepository.Users.AddAsync(user);
+        await _identityRepository.SaveChangesAsync();
+        
+        // TODO
+        // send verification email - call EmailSender service manually to do so
+    }
 }
