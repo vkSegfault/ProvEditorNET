@@ -64,8 +64,8 @@ public class AuthController : ControllerBase
             }
             else
             {
-                // bool exists = await _identityService.UserExistsAsync(payload.Email);
-                bool exists = await _identityService.UserExistsAsync("gonzo@gonzo.com");
+                bool exists = await _identityService.UserExistsAsync(payload.Email);
+                // bool exists = await _identityService.UserExistsAsync("gonzo@gonzo.com");
 
                 if (exists)
                 {
@@ -75,12 +75,11 @@ public class AuthController : ControllerBase
                 else
                 {
                     Console.WriteLine("User doesn't exist - attempt to register new one");
-                    // call register (but how to register without password?)
-                    // await _identityService.RegisterUserAsync( payload.Email, "" );
-                    await _identityService.RegisterUserAsync( "gonzo@gonzo.com", "" );
-                    await _emailSender.SendEmailAsync("adtofaust@gmail.com", "Approval for New User Registration", "New user registration - should you choose to accept?");   //send activation link
+                    await _identityService.RegisterUserAsync( payload.Email, "" );
+                    // await _identityService.RegisterUserAsync( "gonzo@gonzo.com", "" );
+                    // await _emailSender.SendEmailAsync("adtofaust@gmail.com", "Approval for New User Registration", "New user registration - should you choose to accept?");   //send activation link
                     // calling /resendConfirmationEmail with body: { "Email": "user email" } should
-                    await _identityService.SendConfirmationEmailAsync("adtofaust@gmail.com");
+                    await _identityService.SendConfirmationEmailAsync( payload.Email );
                 }
                 Console.WriteLine("Payload.Name: " + payload.Name);
                 return Ok(payload);
@@ -102,6 +101,24 @@ public class AuthController : ControllerBase
         return Ok();
     }
 
+    [HttpGet]
+    [ActionName("confirm")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string email, [FromQuery] string token)
+    {
+        Console.WriteLine("Email: " + email + " Token: " + token);
+        var verified = await _identityService.VerifyEmailAsync(email, token);
+        if (verified)
+        {
+            // generate Bearer authorization token and send it back to client
+            return Ok("Email verified");
+        }
+        else
+        {
+            return BadRequest("Email not verified");
+        }
+    }
+    
     [HttpPost]
     [ActionName("logout")]
     [Authorize]

@@ -1,4 +1,8 @@
+using System.Text;
+using System.Web;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Repository;
@@ -9,11 +13,15 @@ public class IdentityService : IIdentityService
 {
     private readonly IdentityDbContext _identityRepository;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IEmailSender _emailSender;
+    private readonly IConfiguration _configuration;
 
-    public IdentityService(IdentityDbContext identityDbContext, UserManager<IdentityUser> userManager)
+    public IdentityService(IdentityDbContext identityDbContext, UserManager<IdentityUser> userManager, IEmailSender emailSender, IConfiguration configuration)
     {
         _identityRepository = identityDbContext;
         _userManager = userManager;
+        _emailSender = emailSender;
+        _configuration = configuration;
     }
     
     public async Task<bool> UserExistsAsync(string email)
@@ -47,13 +55,51 @@ public class IdentityService : IIdentityService
         
         // TODO
         // send verification email - call EmailSender service manually to do so
+        Console.WriteLine("User created");
     }
 
-    public async Task SendConfirmationEmailAsync(string email)
+    public async Task<string> SendConfirmationEmailAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email.ToUpper());
         Console.WriteLine("Found user: " + user.Email);
         var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var confirmEmailTokenEncoded = HttpUtility.UrlEncode(confirmEmailToken);
         Console.WriteLine("Confirmation token: " + confirmEmailToken);
+
+        string link = $"{_configuration.GetValue<string>("hostDev")}/api/v1/auth/confirm?email={email}&token={confirmEmailTokenEncoded}";
+        string linkEncoded = HttpUtility.UrlEncode(link);
+        Console.WriteLine("Confirmation link: " + link);
+        string mailContent = $"<a href='{link}'>Verify email</a>";
+        await _emailSender.SendEmailAsync("adtofaust@gmail.com", $"New User Registration: {email}", mailContent);
+        
+        Console.WriteLine("Confirmation email sent");
+        
+        return confirmEmailToken;
+    }
+
+    public async Task<bool> VerifyEmailAsync(string email, string token)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user != null)
+        {
+            var valid = await _userManager.ConfirmEmailAsync(user, token);
+            if (valid == IdentityResult.Success)
+            {
+                Console.WriteLine(valid);
+                Console.WriteLine($"Email {email} verified");
+                return true;
+                
+            }
+            else
+            {
+                Console.WriteLine("Email not confirmed - invalid token");
+                return false;
+            }
+        }
+        else
+        {
+            Console.WriteLine("Email not confirmed - user not found");
+            return false;
+        }
     }
 }

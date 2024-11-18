@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using SendGrid;
 using SendGrid.Helpers.Mail;
@@ -27,7 +28,7 @@ public class EmailSender : IEmailSender
         var htmlContent = $"<strong>{message}</strong>";
         var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
         var response = client.SendEmailAsync(msg);
-
+        
         return Task.CompletedTask;
     }
 }
