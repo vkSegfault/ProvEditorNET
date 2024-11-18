@@ -1,10 +1,12 @@
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
+using ProvEditorNET.Services;
 
 namespace ProvEditorNET.Controllers;
 
@@ -15,11 +17,13 @@ public class AuthController : ControllerBase
 {
     private readonly IGoogleAuth _googleAuth;
     private readonly IIdentityService _identityService;
+    private readonly IEmailSender _emailSender;
 
-    public AuthController(IGoogleAuth googleAuth, IIdentityService identityService)
+    public AuthController(IGoogleAuth googleAuth, IIdentityService identityService, IEmailSender emailSender)
     {
         _googleAuth = googleAuth;
         _identityService = identityService;
+        _emailSender = emailSender;
     }
     
     
@@ -70,10 +74,13 @@ public class AuthController : ControllerBase
                 }
                 else
                 {
-                    Console.WriteLine("User doesn't exist - signing in");
+                    Console.WriteLine("User doesn't exist - attempt to register new one");
                     // call register (but how to register without password?)
                     // await _identityService.RegisterUserAsync( payload.Email, "" );
                     await _identityService.RegisterUserAsync( "gonzo@gonzo.com", "" );
+                    await _emailSender.SendEmailAsync("adtofaust@gmail.com", "Approval for New User Registration", "New user registration - should you choose to accept?");   //send activation link
+                    // calling /resendConfirmationEmail with body: { "Email": "user email" } should
+                    await _identityService.SendConfirmationEmailAsync("adtofaust@gmail.com");
                 }
                 Console.WriteLine("Payload.Name: " + payload.Name);
                 return Ok(payload);

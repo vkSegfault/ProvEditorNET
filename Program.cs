@@ -59,8 +59,9 @@ builder.Services.Configure<RouteOptions>(options =>
 // use simple authorization directly from Indentity package or cutomized authenitaction (needed for SSO)
 builder.Services.AddAuthorization();
 builder.Services
-    .AddIdentityApiEndpoints<IdentityUser>()   // this add /register, /login etc endpoints
-    .AddEntityFrameworkStores<IdentityDbContext>();   // this tells to use our DB for storing identity users
+    .AddIdentityApiEndpoints<IdentityUser>() // this add /register, /login etc endpoints
+    .AddEntityFrameworkStores<IdentityDbContext>() // this tells to use our DB for storing identity users
+    .AddUserManager<UserManager<IdentityUser>>();
 
 // alternative when using our custom defined IdentityUser
 // builder.Services.AddAuthentication(options =>

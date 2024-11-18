@@ -8,10 +8,12 @@ namespace ProvEditorNET.Services;
 public class IdentityService : IIdentityService
 {
     private readonly IdentityDbContext _identityRepository;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public IdentityService(IdentityDbContext identityDbContext)
+    public IdentityService(IdentityDbContext identityDbContext, UserManager<IdentityUser> userManager)
     {
         _identityRepository = identityDbContext;
+        _userManager = userManager;
     }
     
     public async Task<bool> UserExistsAsync(string email)
@@ -45,5 +47,13 @@ public class IdentityService : IIdentityService
         
         // TODO
         // send verification email - call EmailSender service manually to do so
+    }
+
+    public async Task SendConfirmationEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email.ToUpper());
+        Console.WriteLine("Found user: " + user.Email);
+        var confirmEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        Console.WriteLine("Confirmation token: " + confirmEmailToken);
     }
 }
