@@ -1,4 +1,5 @@
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -63,20 +64,18 @@ public class AuthController : ControllerBase
             else
             {
                 bool exists = await _identityService.UserExistsAsync(payload.Email);
-                // bool exists = await _identityService.UserExistsAsync("gonzo@gonzo.com");
 
                 if (exists)
                 {
                     Console.WriteLine("User already exists - login in");
-                    // login him/generate bearer token (how to generate one without calling /login or how to login without password?)
+                    var claimsPrincipal = await _identityService.GenerateAccessToken(payload.Email);
+                    Console.WriteLine($"Bearer access token: {claimsPrincipal}");
+                    return SignIn(claimsPrincipal);
                 }
                 else
                 {
                     Console.WriteLine("User doesn't exist - attempt to register new one");
                     await _identityService.RegisterUserAsync( payload.Email, "" );
-                    // await _identityService.RegisterUserAsync( "gonzo@gonzo.com", "" );
-                    // await _emailSender.SendEmailAsync("adtofaust@gmail.com", "Approval for New User Registration", "New user registration - should you choose to accept?");   //send activation link
-                    // calling /resendConfirmationEmail with body: { "Email": "user email" } should
                     await _identityService.SendConfirmationEmailAsync( payload.Email );
                 }
                 Console.WriteLine("Payload.Name: " + payload.Name);
@@ -108,6 +107,7 @@ public class AuthController : ControllerBase
         var verified = await _identityService.VerifyEmailAsync(email, token);
         if (verified)
         {
+            // TODO
             // generate Bearer authorization token and send it back to client
             return Ok($"Email {email} verified");
         }
@@ -115,6 +115,18 @@ public class AuthController : ControllerBase
         {
             return BadRequest("Email not verified");
         }
+    }
+
+    // TODO
+    // this endpoint NEEDS TO BE REMOVED - only application should bearer issue token
+    [HttpGet]
+    [ActionName("accesstoken")]
+    [AllowAnonymous]
+    public async Task<IResult> GetAccessToken([FromQuery] string email)
+    {
+        var claimsPrincipal = await _identityService.GenerateAccessToken(email);
+        Console.WriteLine($"Access token: {claimsPrincipal}");  // TODO - get bearer access token from this claimsPrincipal
+        return Results.SignIn(claimsPrincipal);
     }
     
     [HttpPost]

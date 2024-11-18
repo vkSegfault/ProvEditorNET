@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using System.Text;
 using System.Web;
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -99,5 +101,23 @@ public class IdentityService : IIdentityService
             Console.WriteLine("Email not confirmed - user not found");
             return false;
         }
+    }
+
+    public async Task<ClaimsPrincipal> GenerateAccessToken(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        var mailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+        if (mailConfirmed == true)
+        {
+            var claimsPrincipal = new ClaimsPrincipal(
+                new ClaimsIdentity(
+                    new[] { new Claim(ClaimTypes.Email, email)},
+                    BearerTokenDefaults.AuthenticationScheme
+                )
+            );
+            return claimsPrincipal;
+        }
+        
+        return null;
     }
 }
