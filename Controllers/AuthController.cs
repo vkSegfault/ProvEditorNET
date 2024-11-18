@@ -17,13 +17,11 @@ public class AuthController : ControllerBase
 {
     private readonly IGoogleAuth _googleAuth;
     private readonly IIdentityService _identityService;
-    private readonly IEmailSender _emailSender;
 
-    public AuthController(IGoogleAuth googleAuth, IIdentityService identityService, IEmailSender emailSender)
+    public AuthController(IGoogleAuth googleAuth, IIdentityService identityService)
     {
         _googleAuth = googleAuth;
         _identityService = identityService;
-        _emailSender = emailSender;
     }
     
     
@@ -102,7 +100,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet]
-    [ActionName("confirm")]
+    [ActionName("confirmemail")]
     [AllowAnonymous]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string email, [FromQuery] string token)
     {
@@ -111,7 +109,7 @@ public class AuthController : ControllerBase
         if (verified)
         {
             // generate Bearer authorization token and send it back to client
-            return Ok("Email verified");
+            return Ok($"Email {email} verified");
         }
         else
         {

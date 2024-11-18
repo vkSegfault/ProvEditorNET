@@ -2,7 +2,6 @@ using System.Text;
 using System.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Repository;
@@ -66,8 +65,7 @@ public class IdentityService : IIdentityService
         var confirmEmailTokenEncoded = HttpUtility.UrlEncode(confirmEmailToken);
         Console.WriteLine("Confirmation token: " + confirmEmailToken);
 
-        string link = $"{_configuration.GetValue<string>("hostDev")}/api/v1/auth/confirm?email={email}&token={confirmEmailTokenEncoded}";
-        string linkEncoded = HttpUtility.UrlEncode(link);
+        string link = $"{_configuration.GetValue<string>("hostDev")}/api/v1/auth/confirmemail?email={email}&token={confirmEmailTokenEncoded}";
         Console.WriteLine("Confirmation link: " + link);
         string mailContent = $"<a href='{link}'>Verify email</a>";
         await _emailSender.SendEmailAsync("adtofaust@gmail.com", $"New User Registration: {email}", mailContent);
