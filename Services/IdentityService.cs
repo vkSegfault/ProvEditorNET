@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using System.Web;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -16,13 +17,15 @@ public class IdentityService : IIdentityService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IEmailSender _emailSender;
     private readonly IConfiguration _configuration;
+    private readonly IGoogleAuth _googleAuth;
 
-    public IdentityService(IdentityDbContext identityDbContext, UserManager<IdentityUser> userManager, IEmailSender emailSender, IConfiguration configuration)
+    public IdentityService(IdentityDbContext identityDbContext, UserManager<IdentityUser> userManager, IEmailSender emailSender, IConfiguration configuration, IGoogleAuth googleAuth)
     {
         _identityRepository = identityDbContext;
         _userManager = userManager;
         _emailSender = emailSender;
         _configuration = configuration;
+        _googleAuth = googleAuth;
     }
     
     public async Task<bool> UserExistsAsync(string email)
@@ -37,7 +40,6 @@ public class IdentityService : IIdentityService
         {
             return false;
         }
-        
     }
 
     public async Task RegisterUserAsync(string email, string password)
@@ -67,7 +69,7 @@ public class IdentityService : IIdentityService
         var confirmEmailTokenEncoded = HttpUtility.UrlEncode(confirmEmailToken);
         Console.WriteLine("Confirmation token: " + confirmEmailToken);
 
-        string link = $"{_configuration.GetValue<string>("hostDev")}/api/v1/auth/confirmemail?email={email}&token={confirmEmailTokenEncoded}";
+        string link = $"{_configuration.GetValue<string>("Host:Dev")}/api/v1/auth/confirmemail?email={email}&token={confirmEmailTokenEncoded}";
         Console.WriteLine("Confirmation link: " + link);
         string mailContent = $"<a href='{link}'>Verify email</a>";
         await _emailSender.SendEmailAsync("adtofaust@gmail.com", $"New User Registration: {email}", mailContent);
@@ -119,5 +121,28 @@ public class IdentityService : IIdentityService
         }
         
         return null;
+    }
+
+    public async Task<GoogleJsonWebSignature.Payload> AuthenticateGoogleUserIdTokenAsync(string idToken)
+    {
+        Console.WriteLine($"Validating Google Access token: {idToken}");
+        GoogleJsonWebSignature.Payload payload = await _googleAuth.AuthenticateIdToken(idToken);
+        
+        if (payload is not null)
+        {
+            if (payload.Audience.Equals(_configuration.GetValue<string>("Google:client_id")))
+            {
+                return payload;
+                
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            return null;
+        }
     }
 }

@@ -1,13 +1,9 @@
 using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using ProvEditorNET.Interfaces;
-using ProvEditorNET.Models;
-using ProvEditorNET.Services;
 
 namespace ProvEditorNET.Controllers;
 
@@ -45,8 +41,6 @@ public class AuthController : ControllerBase
         {
             return BadRequest("Request body is null");
         }
-
-        UserProfileGoogle user;
         
         JObject requestBodyJson = JObject.Parse( requestBody.ToString() );
         string idToken = requestBodyJson["idToken"]?.ToString();
@@ -55,8 +49,7 @@ public class AuthController : ControllerBase
         // handle idToken
         if (idToken is not null)
         {
-            Console.WriteLine($"Validating Google Access token: {idToken}");
-            GoogleJsonWebSignature.Payload payload = await _googleAuth.AuthenticateIdToken(idToken);
+            GoogleJsonWebSignature.Payload payload = await _identityService.AuthenticateGoogleUserIdTokenAsync(idToken);
             if (payload is null )
             {
                 return BadRequest("Invalid token");
