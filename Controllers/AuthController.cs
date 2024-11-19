@@ -67,8 +67,13 @@ public class AuthController : ControllerBase
 
                 if (exists)
                 {
-                    Console.WriteLine("User already exists - login in");
+                    Console.WriteLine($"User {payload.Email} already exists - login in");
                     var claimsPrincipal = await _identityService.GenerateAccessToken(payload.Email);
+                    if (claimsPrincipal is null)
+                    {
+                        Console.WriteLine("User exists but administrator didn't approve him/her");
+                        return Unauthorized("User exists but administrator didn't approve him/her");
+                    }
                     Console.WriteLine($"Bearer access token: {claimsPrincipal}");
                     return SignIn(claimsPrincipal);
                 }
@@ -77,6 +82,7 @@ public class AuthController : ControllerBase
                     Console.WriteLine("User doesn't exist - attempt to register new one");
                     await _identityService.RegisterUserAsync( payload.Email, "" );
                     await _identityService.SendConfirmationEmailAsync( payload.Email );
+                    return Created("Email with user activation link has been sent to administrator", null);
                 }
                 Console.WriteLine("Payload.Name: " + payload.Name);
                 return Ok(payload);
@@ -98,6 +104,7 @@ public class AuthController : ControllerBase
         return Ok();
     }
 
+    // this endpoint is generally to be used only by confirmation mail we sent from calling /google endpoint - there is no other way to get confirmation token
     [HttpGet]
     [ActionName("confirmemail")]
     [AllowAnonymous]
@@ -107,26 +114,40 @@ public class AuthController : ControllerBase
         var verified = await _identityService.VerifyEmailAsync(email, token);
         if (verified)
         {
-            // TODO
-            // generate Bearer authorization token and send it back to client
-            return Ok($"Email {email} verified");
+            Console.WriteLine($"Email {email} verified");
+            var claimsPrincipal = await _identityService.GenerateAccessToken(email);
+            Console.WriteLine($"Bearer access token: {claimsPrincipal}");
+
+            // return RedirectToAction("accesstoken", new { email, token });
+            return Ok($"Email {email} verified - you can close this page");
+            
+            // what should happend here ideally:
+            // 1. we return: Ok($"Email {email} verified")
+            // 2. we call some Redirect (code 302) and actually 
+            
+            return SignIn(claimsPrincipal);
         }
         else
         {
             return BadRequest("Email not verified");
         }
     }
-
-    // TODO
-    // this endpoint NEEDS TO BE REMOVED - only application should bearer issue token
+    
     [HttpGet]
     [ActionName("accesstoken")]
     [AllowAnonymous]
-    public async Task<IResult> GetAccessToken([FromQuery] string email)
+    public async Task<IActionResult> GetAccessToken([FromQuery] string email)
     {
         var claimsPrincipal = await _identityService.GenerateAccessToken(email);
-        Console.WriteLine($"Access token: {claimsPrincipal}");  // TODO - get bearer access token from this claimsPrincipal
-        return Results.SignIn(claimsPrincipal);
+        if (claimsPrincipal != null)
+        {
+            Console.WriteLine($"Access token: {claimsPrincipal}");  // TODO - get bearer access token from this claimsPrincipal
+            return SignIn(claimsPrincipal);
+        }
+        else
+        {
+            return NotFound($"User {email} not found or has been not verified by administrator");
+        }
     }
     
     [HttpPost]

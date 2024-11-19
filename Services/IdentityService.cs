@@ -106,7 +106,7 @@ public class IdentityService : IIdentityService
     public async Task<ClaimsPrincipal> GenerateAccessToken(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        var mailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+        var mailConfirmed = user != null ? await _userManager.IsEmailConfirmedAsync(user) : false;
         if (mailConfirmed == true)
         {
             var claimsPrincipal = new ClaimsPrincipal(
