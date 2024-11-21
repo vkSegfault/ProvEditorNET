@@ -57,9 +57,18 @@ builder.Services.Configure<RouteOptions>(options =>
 });
 
 // use simple authorization directly from Indentity package or cutomized authenitaction (needed for SSO)
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(Options => 
+{
+    // policies are just set of Roles ???
+    Options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin", "User", "Observer"));  // NEW
+    Options.AddPolicy("UserPolicy", policy => policy.RequireRole("User", "Observer"));  // NEW
+    Options.AddPolicy("ObserverPolicy", policy => policy.RequireRole("Observer"));  // NEW
+});
 builder.Services
+    .AddIdentity<IdentityUser, IdentityRole>()  // NEW
+    .AddRoles<IdentityRole>()
     .AddIdentityApiEndpoints<IdentityUser>() // this add /register, /login etc endpoints
+    .AddIdentityApiEndpoints<IdentityRole>()  // needed ? for any new roles endpoint? if it adds new endpoint then 
     .AddEntityFrameworkStores<IdentityDbContext>() // this tells to use our DB for storing identity users
     .AddUserManager<UserManager<IdentityUser>>();
 

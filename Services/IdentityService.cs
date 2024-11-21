@@ -15,14 +15,16 @@ public class IdentityService : IIdentityService
 {
     private readonly IdentityDbContext _identityRepository;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IEmailSender _emailSender;
     private readonly IConfiguration _configuration;
     private readonly IGoogleAuth _googleAuth;
 
-    public IdentityService(IdentityDbContext identityDbContext, UserManager<IdentityUser> userManager, IEmailSender emailSender, IConfiguration configuration, IGoogleAuth googleAuth)
+    public IdentityService(IdentityDbContext identityDbContext, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender, IConfiguration configuration, IGoogleAuth googleAuth)
     {
         _identityRepository = identityDbContext;
         _userManager = userManager;
+        _roleManager = roleManager;
         _emailSender = emailSender;
         _configuration = configuration;
         _googleAuth = googleAuth;
@@ -144,5 +146,35 @@ public class IdentityService : IIdentityService
         {
             return null;
         }
+    }
+
+
+    // NOTE that we add users to Roles, not other way around
+    public async Task GetAllRolesAsync()
+    {
+        return _roleManager.Roles;
+    } 
+
+    public async Task CreateRoleAsync(string role)
+    {
+        //Afer user created, create the role
+        var role = new IdentityRole("Admin");
+        await _roleManager.CreateAsync(role);
+    }
+
+    public async Task GetUserRolesAsync(IdentityUser user)
+    {
+        var userRoles = await _userManager.GetRolesAsync(user);
+        var authClaims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+    }
+
+    public async Task AddUserToRoleAsync(IdentityUser user, string roleName)
+    {
+        //add the role to user
+        await _userManager.AddToRoleAsync(user, roleName);
     }
 }

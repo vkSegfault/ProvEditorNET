@@ -12,4 +12,8 @@ public interface IIdentityService
     Task<bool> VerifyEmailAsync(string email, string token);
     Task<ClaimsPrincipal> GenerateAccessToken(string email);
     Task<GoogleJsonWebSignature.Payload> AuthenticateGoogleUserIdTokenAsync(string idToken);
+    Task GetAllRolesAsync();
+    Task CreateRoleAsync(string role);
+    Task GetUserRolesAsync(IdentityUser user);
+    Task AddUserToRoleAsync(IdentityUser user, string roleName);
 }
