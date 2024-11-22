@@ -145,7 +145,9 @@ public class AuthController : ControllerBase
     
     [HttpPost]
     [ActionName("logout")]
-    [Authorize]
+    // [Authorize]
+    [Authorize(Roles = "Administrator")]  // NEW - CHANGED - is "Administrator" role some prebuilt role ?
+    [Authorize(Policy = "AdminPolicy")]  // policies???
     public async Task<IActionResult> Logout(SignInManager<IdentityUser> signInManager, [FromBody] object obj)
     {
         // if Frontend calls POST on this endpoint with empty body we assume it means we should logout 
