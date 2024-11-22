@@ -149,17 +149,37 @@ public class IdentityService : IIdentityService
     }
     
     // NOTE that we add users to Roles, not other way around
-    public List<IdentityRole> GetAllRolesAsync()
+    public IQueryable<IdentityRole> GetAllRoles()
     {
         IQueryable<IdentityRole> roles = _roleManager.Roles;
-        return roles.ToList();
+        foreach (IdentityRole role in roles)
+        {
+            Console.WriteLine(role.ToString());
+        }
+        return roles;
     } 
     public async Task CreateRoleAsync(string roleName)
     {
-        //Afer user created, create the role
-        var role = new IdentityRole("Admin");
+        var role = new IdentityRole(roleName);
         await _roleManager.CreateAsync(role);
     }
+
+    public async Task<bool> DeleteRoleAsync(string roleName)
+    {
+        bool roleExists = await _roleManager.RoleExistsAsync(roleName);
+        if (roleExists == true)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            await _roleManager.DeleteAsync(role!);
+            Console.WriteLine("Role deleted");
+            return true;
+        }
+        {
+            Console.WriteLine($"Role {roleName} doesn't exists");
+            return false;
+        }
+    }
+    
     public async Task GetUserRolesAsync(IdentityUser user)
     {
         var userRoles = await _userManager.GetRolesAsync(user);
