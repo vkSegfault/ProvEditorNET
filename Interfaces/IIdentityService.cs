@@ -18,5 +18,5 @@ public interface IIdentityService
     Task<bool> DeleteRoleAsync(string roleName);
     Task<List<string>> GetUserRolesAsync(string email);
     Task<bool> AddUserToRoleAsync(string email, string roleName);
-    Task RemoveUserFromRoleAsync(IdentityUser user, string roleName);
+    Task<bool> RemoveUserFromRoleAsync(string email, string roleName);
 }

@@ -78,6 +78,22 @@ public class RoleController : ControllerBase
         return added ? NoContent() : BadRequest("Role not added");
     }
     
-    // TODO - add role to user
-    // TODO - remove role from user
+    
+    [HttpDelete]
+    [ActionName("RemoveUserFromRole")]
+    [AllowAnonymous] // TODO - remove allowAnonymous
+    public async Task<ActionResult> RemoveUserFromRole([FromQuery] string email, [FromQuery] string roleName)
+    {
+        if (email is null)
+        {
+            return BadRequest("Email query string is required");
+        }
+        if (roleName is null)
+        {
+            return BadRequest("Role name query string is required");
+        }
+        
+        var removed = await _identityService.RemoveUserFromRoleAsync(email, roleName);
+        return removed ? NoContent() : BadRequest("Role not added");
+    }
 }

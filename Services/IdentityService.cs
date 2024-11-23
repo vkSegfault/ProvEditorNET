@@ -223,7 +223,7 @@ public class IdentityService : IIdentityService
         if (await UserExistsAsync(email))
         {
             var user = await _userManager.FindByEmailAsync(email);
-            await _userManager.AddToRoleAsync(user, roleName);
+            await _userManager.AddToRoleAsync(user!, roleName);
             return true;
         }
         else
@@ -232,8 +232,15 @@ public class IdentityService : IIdentityService
         }
     }
 
-    public async Task RemoveUserFromRoleAsync(IdentityUser user, string roleName)
+    public async Task<bool> RemoveUserFromRoleAsync(string email, string roleName)
     {
-        await _userManager.RemoveFromRoleAsync(user, roleName);
+        if (await UserExistsAsync(email))
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            await _userManager.RemoveFromRoleAsync(user!, roleName);
+            return true;
+        }
+
+        return false;
     }
 }
