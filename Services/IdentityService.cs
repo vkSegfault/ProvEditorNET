@@ -113,18 +113,40 @@ public class IdentityService : IIdentityService
         var mailConfirmed = user != null ? await _userManager.IsEmailConfirmedAsync(user) : false;
         if (mailConfirmed == true)
         {
-            var claimsPrincipal = new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new[] { new Claim(ClaimTypes.Email, email)},
-                    BearerTokenDefaults.AuthenticationScheme
-                )
-            );
+            List<Claim> allClaims = await GetUserClaims(email);
+            allClaims.Append( new Claim(ClaimTypes.Email, email) );
+            
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity( allClaims, BearerTokenDefaults.AuthenticationScheme );
+            
+            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal( claimsIdentity );
+            
+            // var claimsPrincipal = new ClaimsPrincipal(
+            //     new ClaimsIdentity(
+            //         new[] { new Claim(ClaimTypes.Email, email), claims },
+            //         BearerTokenDefaults.AuthenticationScheme
+            //     )
+            // );
             return claimsPrincipal;
         }
         
         return null;
     }
 
+    public async Task<List<Claim>> GetUserClaims(string email)
+    {
+        if (await UserExistsAsync(email))
+        {
+            var roles = await GetUserRolesAsync(email);
+            var claims = new List<Claim>();
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+            return claims;
+        }
+        return new List<Claim>();
+    }
+    
     public async Task<GoogleJsonWebSignature.Payload> AuthenticateGoogleUserIdTokenAsync(string idToken)
     {
         Console.WriteLine($"Validating Google Access token: {idToken}");
@@ -180,18 +202,38 @@ public class IdentityService : IIdentityService
         }
     }
     
-    public async Task GetUserRolesAsync(IdentityUser user)
+    public async Task<List<string>> GetUserRolesAsync(string email)
     {
-        var userRoles = await _userManager.GetRolesAsync(user);
+        if (await UserExistsAsync(email))
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var userRoles = await _userManager.GetRolesAsync(user);
+            return userRoles.ToList();
+        }
+        
         var authClaims = new List<Claim>
         {
             // new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
             // new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+        return new List<string>();
     }
-    public async Task AddUserToRoleAsync(IdentityUser user, string roleName)
+    public async Task<bool> AddUserToRoleAsync(string email, string roleName)
     {
-        //add the role to user
-        await _userManager.AddToRoleAsync(user, roleName);
+        if (await UserExistsAsync(email))
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            await _userManager.AddToRoleAsync(user, roleName);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public async Task RemoveUserFromRoleAsync(IdentityUser user, string roleName)
+    {
+        await _userManager.RemoveFromRoleAsync(user, roleName);
     }
 }

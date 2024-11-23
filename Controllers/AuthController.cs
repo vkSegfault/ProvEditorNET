@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -61,7 +62,7 @@ public class AuthController : ControllerBase
                 if (exists)
                 {
                     Console.WriteLine($"User {payload.Email} already exists - login in");
-                    var claimsPrincipal = await _identityService.GenerateAccessToken(payload.Email);
+                    var claimsPrincipal = await _identityService.GenerateAccessToken(payload.Email );
                     if (claimsPrincipal is null)
                     {
                         Console.WriteLine("User exists but administrator didn't approve him/her");

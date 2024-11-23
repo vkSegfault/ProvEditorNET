@@ -11,10 +11,12 @@ public interface IIdentityService
     Task<string> SendConfirmationEmailAsync(string email);
     Task<bool> VerifyEmailAsync(string email, string token);
     Task<ClaimsPrincipal> GenerateAccessToken(string email);
+    Task<List<Claim>> GetUserClaims(string email);
     Task<GoogleJsonWebSignature.Payload> AuthenticateGoogleUserIdTokenAsync(string idToken);
     IQueryable<IdentityRole> GetAllRoles();
     Task CreateRoleAsync(string roleName);
     Task<bool> DeleteRoleAsync(string roleName);
-    Task GetUserRolesAsync(IdentityUser user);
-    Task AddUserToRoleAsync(IdentityUser user, string roleName);
+    Task<List<string>> GetUserRolesAsync(string email);
+    Task<bool> AddUserToRoleAsync(string email, string roleName);
+    Task RemoveUserFromRoleAsync(IdentityUser user, string roleName);
 }
