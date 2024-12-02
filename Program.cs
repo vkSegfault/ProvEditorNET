@@ -110,7 +110,7 @@ else
     app.UseCors("AllowSpecificOrigin");
 }
 
-app.MapIdentityApi<IdentityUser>();   // used for crude Authorization directly from Identity package (without any custom changes)
+app.MapGroup("api/v1/auth").MapIdentityApi<IdentityUser>();   // used for crude Authorization directly from Identity package (without any custom changes)
 // app.MapIdentityApi<User>();
 app.UseHttpsRedirection();
 app.UseAuthentication();

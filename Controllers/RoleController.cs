@@ -6,7 +6,7 @@ using ProvEditorNET.Interfaces;
 namespace ProvEditorNET.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]/[action]")]
+[Route("api/v1/auth/[controller]/[action]")]
 public class RoleController : ControllerBase
 {
     IIdentityService _identityService;
