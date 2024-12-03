@@ -15,4 +15,6 @@ public class Province : DbContext
     [Column("provinceName")]
     public string Name { get; set; } = string.Empty;
     
+    public Guid CountryId { get; set; }
+    public Country Country { get; set; }
 }

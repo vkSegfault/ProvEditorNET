@@ -7,3 +7,5 @@ If you get: "Cannot access a disposed context instance..."
 
 For first DB migration:
 `dotnet ef migrations add init --context ProvinceDbContext`
+`dotnet ef database update --context ProvinceDbContext`
+`dotnet ef migrations remove --context ProvinceDbContext`
