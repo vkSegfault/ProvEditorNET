@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
+using ProvEditorNET.DTO;
+using ProvEditorNET.Interfaces;
+using ProvEditorNET.Mappers;
+using ProvEditorNET.Models;
 
 namespace ProvEditorNET.Controllers;
 
@@ -9,11 +13,28 @@ namespace ProvEditorNET.Controllers;
 [Authorize]
 public class ProvinceController: ControllerBase
 {
+    private readonly IProvinceService _provinceService;
+
+    public ProvinceController(IProvinceService provinceService)
+    {
+        _provinceService = provinceService;
+    }
+    
+    
     [HttpGet("healthcheck", Name = "Healthcheck")]
     [AllowAnonymous]   // make this endpoint accessible without authorization 
     public async Task<ActionResult<Boolean>> Healthcheck()
     {
         return Ok(true);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Province>> CreateProvince([FromBody] ProvinceDto provinceDto)
+    {
+        var province = provinceDto.ToProvince();
+        await _provinceService.CreateAsync(province);
+
+        return Ok();
     }
     
     // this endpoint is secured
