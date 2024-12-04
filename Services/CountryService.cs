@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
 using ProvEditorNET.Repository;
@@ -17,5 +18,11 @@ public class CountryService : ICountryService
     {
         await _context.Countries.AddAsync(country);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<Country>> GetAllCountriesAsync()
+    {
+        var countries = await _context.Countries.ToListAsync();
+        return countries;
     }
 }

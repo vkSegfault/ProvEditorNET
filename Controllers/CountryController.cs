@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProvEditorNET.DTO;
 using ProvEditorNET.Interfaces;
+using ProvEditorNET.Mappers;
+using ProvEditorNET.Models;
 
 namespace ProvEditorNET.Controllers;
 
@@ -16,5 +19,23 @@ public class CountryController : ControllerBase
         _countryService = countryService;
     }
     
+    [HttpPost]
+    public async Task<ActionResult<Country>> CreateCountry([FromBody] CountryDto countryDto)
+    {
+        var country = countryDto.ToCountry();
+        await _countryService.CreateAsync(country);
+
+        return Ok();
+    }
     
+    [HttpGet]
+    public async Task<IActionResult> GetAllCountries()
+    {
+        var countryList = await _countryService.GetAllCountriesAsync();
+        var countryDtoList = countryList.Select(i => i.ToCountryDto());
+
+        // don't return List<> here (which is lazy-evaluated) cause we will get strange error about missing DbContext - misleading as fcuk
+        // just return IEnumerable
+        return Ok(countryDtoList);
+    }
 }

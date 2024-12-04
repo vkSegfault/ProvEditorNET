@@ -19,6 +19,6 @@ public class ProvinceDbContext : DbContext
             .HasMany(c => c.Provinces)
             .WithOne(p => p.Country)
             .HasForeignKey(p => p.CountryId)
-            .HasPrincipalKey(c => c.Id);
+            .HasPrincipalKey(c => c.CountryId);
     }
 }

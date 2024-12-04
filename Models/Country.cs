@@ -9,7 +9,7 @@ public class Country : DbContext
 {
     [Key]
     [Column("countryId")]
-    public Guid Id { get; set; }
+    public Guid CountryId { get; set; }
     
     [Required]
     [Column("countryName")]

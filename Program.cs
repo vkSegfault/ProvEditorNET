@@ -20,6 +20,7 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IGoogleAuth, GoogleAuth>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IProvinceService, ProvinceService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
