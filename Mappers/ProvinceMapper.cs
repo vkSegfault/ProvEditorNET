@@ -16,6 +16,7 @@ public static class ProvinceMapper
             ProvinceId = Guid.NewGuid(),
             Name = provinceDto.ProvinceName,
             Country = country,
+            Population = provinceDto.Population,
         };
     }
 }

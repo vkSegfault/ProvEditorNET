@@ -17,4 +17,10 @@ public class Province : DbContext
     
     public Guid CountryId { get; set; }
     public Country Country { get; set; }
+
+    [Required]
+    [Column("population")]
+    public int Population { get; set; }
+
+
 }
