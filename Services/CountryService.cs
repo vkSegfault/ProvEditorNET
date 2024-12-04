@@ -25,4 +25,10 @@ public class CountryService : ICountryService
         var countries = await _context.Countries.ToListAsync();
         return countries;
     }
+
+    public async Task<Country> GetCountryByName(string countryName)
+    {
+        var country = await _context.Countries.FirstOrDefaultAsync(x => x.Name == countryName);
+        return country;
+    }
 }

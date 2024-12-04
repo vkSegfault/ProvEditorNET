@@ -14,13 +14,17 @@ namespace ProvEditorNET.Controllers;
 public class ProvinceController: ControllerBase
 {
     private readonly IProvinceService _provinceService;
+    private readonly ICountryService _countryService;
 
-    public ProvinceController(IProvinceService provinceService)
+    public ProvinceController(IProvinceService provinceService, ICountryService countryService)
     {
         _provinceService = provinceService;
+        _countryService = countryService;
     }
     
     
+    // TODO - move this healthcheck to seperate controller
+    // TODO - add more checks like db connection check, quick services functionallity check etc
     [HttpGet("healthcheck", Name = "Healthcheck")]
     [AllowAnonymous]   // make this endpoint accessible without authorization 
     public async Task<ActionResult<Boolean>> Healthcheck()
@@ -31,10 +35,15 @@ public class ProvinceController: ControllerBase
     [HttpPost]
     public async Task<ActionResult<Province>> CreateProvince([FromBody] ProvinceDto provinceDto)
     {
-        var province = provinceDto.ToProvince();
+        Country country = await _countryService.GetCountryByName(provinceDto.CountryName);
+        if (country is null)
+        {
+            return NotFound("Country not found");
+        }
+        var province = provinceDto.ToProvince(country);
         await _provinceService.CreateAsync(province);
 
-        return Ok();
+        return Ok("Province created: " + province.Name);
     }
     
     // this endpoint is secured
