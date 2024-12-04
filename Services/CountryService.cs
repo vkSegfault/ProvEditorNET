@@ -26,9 +26,23 @@ public class CountryService : ICountryService
         return countries;
     }
 
-    public async Task<Country> GetCountryByName(string countryName)
+    public async Task<Country> GetCountryByNameAsync(string countryName)
     {
         var country = await _context.Countries.FirstOrDefaultAsync(x => x.Name == countryName);
         return country;
+    }
+    
+    public async Task<bool> DeleteCountryAsync(string countryName)
+    {
+        var country = await _context.Countries.FirstOrDefaultAsync(x => x.Name == countryName);
+        if (country != null)
+        {
+            _context.Countries.Remove(country);
+            Console.WriteLine("Country deleted: " + countryName );
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        
+        return false;
     }
 }

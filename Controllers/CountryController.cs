@@ -38,4 +38,15 @@ public class CountryController : ControllerBase
         // just return IEnumerable
         return Ok(countryDtoList);
     }
+    
+    [HttpDelete("name:string")]
+    public async Task<IActionResult> DeleteCountry(string countryName)
+    {
+        var deleted = await _countryService.DeleteCountryAsync(countryName);
+        if (deleted)
+        {
+            return Ok("Country deleted: " + countryName);
+        }
+        return BadRequest("Country not found");
+    }
 }

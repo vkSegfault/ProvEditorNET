@@ -35,7 +35,7 @@ public class ProvinceController: ControllerBase
     [HttpPost]
     public async Task<ActionResult<Province>> CreateProvince([FromBody] ProvinceDto provinceDto)
     {
-        Country country = await _countryService.GetCountryByName(provinceDto.CountryName);
+        Country country = await _countryService.GetCountryByNameAsync(provinceDto.CountryName);
         if (country is null)
         {
             return NotFound("Country not found");
