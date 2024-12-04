@@ -6,6 +6,7 @@ namespace ProvEditorNET.Interfaces;
 
 public interface IIdentityService
 {
+    Task<IEnumerable<IdentityUser>> GetAllUsers();
     Task<bool> UserExistsAsync(string email);
     Task RegisterUserAsync(string email, string password);   // for SSO password should be empty
     Task<string> SendConfirmationEmailAsync(string email);

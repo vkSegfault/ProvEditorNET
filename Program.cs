@@ -68,7 +68,7 @@ builder.Services.Configure<RouteOptions>(options =>
 // use simple authorization directly from Indentity package or cutomized authenitaction (needed for SSO)
 builder.Services.AddAuthorization(options => 
 {
-    // policies are just set of Roles ???
+    // policies are just set of Roles
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin", "User", "Observer"));  // NEW
     options.AddPolicy("UserPolicy", policy => policy.RequireRole("User", "Observer"));  // NEW
     options.AddPolicy("ObserverPolicy", policy => policy.RequireRole("Observer"));  // NEW

@@ -96,4 +96,40 @@ public class RoleController : ControllerBase
         var removed = await _identityService.RemoveUserFromRoleAsync(email, roleName);
         return removed ? NoContent() : BadRequest("Role not added");
     }
+    
+    // premise of this endpoint is to give admin rights to first registered user
+    // call it just after first registration
+    [HttpGet]
+    [ActionName("giveadminrights")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GiveAdminRights()
+    {
+        // check if there are no roles - if not create default ones: admin, user, observer
+        var roles =  _identityService.GetAllRoles();
+        if ( roles.Count() == 0 )
+        {
+            await _identityService.CreateRoleAsync("Admin");
+            await _identityService.CreateRoleAsync("User");
+            await _identityService.CreateRoleAsync("Observer");
+        }
+
+        // check if there is only 1 user - first one will get all default rights
+        var users = await _identityService.GetAllUsers();
+        if ( users.Count() == 0 )
+        {
+            return BadRequest("There are no user - please register first one");
+        }
+        else if (users.Count() > 1)
+        {
+            return BadRequest("There are more than 1 users - first one already has admin rigths");
+        }
+        else if ( users.Count() == 1 )
+        {
+            await _identityService.AddUserToRoleAsync(users.First().Email, "Admin");
+            await _identityService.AddUserToRoleAsync(users.First().Email, "User");
+            await _identityService.AddUserToRoleAsync(users.First().Email, "Observer");
+        }
+
+        return Ok("First user was given Admin, User and Observer rights");
+    }
 }

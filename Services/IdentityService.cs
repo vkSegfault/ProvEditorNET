@@ -29,6 +29,12 @@ public class IdentityService : IIdentityService
         _configuration = configuration;
         _googleAuth = googleAuth;
     }
+
+    public async Task<IEnumerable<IdentityUser>> GetAllUsers()
+    {
+        var users = await _identityRepository.Users.ToListAsync();
+        return users;
+    }
     
     public async Task<bool> UserExistsAsync(string email)
     {

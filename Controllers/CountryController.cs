@@ -9,7 +9,7 @@ namespace ProvEditorNET.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-[Authorize]
+[Authorize(Roles = "Admin,User")]   // Admin OR User - not necessarily both
 public class CountryController : ControllerBase
 {
     private readonly ICountryService _countryService;
