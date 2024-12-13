@@ -79,6 +79,13 @@ builder.Services
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<IdentityDbContext>(); // this tells to use our DB for storing IdentityUsers and IdentityRoles - SHOULD BE ADDED AS LAST
 
+builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).Configure(
+    options =>
+    {
+        options.BearerTokenExpiration = TimeSpan.FromMinutes(5);
+    }
+    );
+
 // alternative when using our custom defined IdentityUser
 // builder.Services.AddAuthentication(options =>
 //     {
