@@ -29,6 +29,7 @@ public class CountryController : ControllerBase
     }
     
     [HttpGet]
+    [Route("all")]
     public async Task<IActionResult> GetAllCountries()
     {
         var countryList = await _countryService.GetAllCountriesAsync();
@@ -38,6 +39,16 @@ public class CountryController : ControllerBase
         // just return IEnumerable
         return Ok(countryDtoList);
     }
+
+    [HttpGet]
+    [Route("{name}")]
+    public async Task<IActionResult> GetCountryByName(string name)
+    {
+        var country = await _countryService.GetCountryByNameAsync(name);
+        var countryDto = country.ToCountryDto();
+        return Ok(countryDto);
+    }
+    
     
     [HttpDelete("name:string")]
     public async Task<IActionResult> DeleteCountry(string countryName)
