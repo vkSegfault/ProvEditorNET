@@ -79,12 +79,17 @@ builder.Services
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<IdentityDbContext>(); // this tells to use our DB for storing IdentityUsers and IdentityRoles - SHOULD BE ADDED AS LAST
 
+// this only applies to Bearer Token that is not stored as cookie in browser (cookie and session cookie TTLs needs to be configured elsewhere):
 builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).Configure(
     options =>
     {
         options.BearerTokenExpiration = TimeSpan.FromMinutes(5);
     }
     );
+
+
+// for setting cookies and session cookies reference:
+// https://learn.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-8.0
 
 // alternative when using our custom defined IdentityUser
 // builder.Services.AddAuthentication(options =>
