@@ -19,4 +19,13 @@ public static class ProvinceMapper
             Population = provinceDto.Population,
         };
     }
+
+    public static ProvinceDto ToProvinceDto(this Province province)
+    {
+        return new ProvinceDto( 
+            province.Name, 
+            province.Country.Name, 
+            province.Population
+            );
+    }
 }

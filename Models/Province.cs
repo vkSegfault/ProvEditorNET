@@ -15,6 +15,7 @@ public class Province : DbContext
     [Column("provinceName")]
     public string Name { get; set; } = string.Empty;
     
+    // Country can't be required because Sea Provinces can't be part of country
     public Guid CountryId { get; set; }
     public Country Country { get; set; }
 

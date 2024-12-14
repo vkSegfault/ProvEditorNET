@@ -46,6 +46,37 @@ public class ProvinceController: ControllerBase
         return Ok("Province created: " + province.Name);
     }
     
+    
+    [HttpGet]   // adding [HttpGet(Name = "GetProvinces")] will fail on Swagger creation
+    [Route("all")]
+    public async Task<ActionResult<List<String>>> GetAllProvinces()
+    {
+        var provinces = await _provinceService.GetAllProvincesAsync();
+        var provincesDto = provinces.Select(p => p.ToProvinceDto());
+
+        // TODO - remove thread sleep - just used for testing frontend delays
+        Thread.Sleep(2000);
+        return Ok(provincesDto);
+    }
+    
+    
+    [HttpGet]
+    [Route("{name}")]
+    public async Task<IActionResult> GetProvince([FromRoute] string name)
+    {
+        var province = await _provinceService.GetProvinceByNameAsync(name);
+        if (province != null)
+        {
+            var provinceDto = province.ToProvinceDto();
+            return Ok(provinceDto);
+        }
+        else
+        {
+            return NotFound();
+        }
+
+    }
+    
     // this endpoint is secured
     // (1 --------------- Bearer Access Token) go to /login endpoint and pass your login and password:
     // curl -X 'POST' 'http://localhost:5077/login' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{
@@ -64,15 +95,5 @@ public class ProvinceController: ControllerBase
     //   "twoFactorRecoveryCode": "string"
     // }'
     // we can now access any secured endpoint
-    [HttpGet(Name = "GetProvinces")]
-    [Authorize]
-    public async Task<ActionResult<List<String>>> GetAllProvinces()
-    {
-        var provinces = new List<String>{ "pomerania", "masovia" };
-        provinces.Add("silesia");
 
-        // TODO - remove thread sleep - just used for testing frontend delays
-        Thread.Sleep(2000);
-        return Ok(provinces);
-    }
 }
