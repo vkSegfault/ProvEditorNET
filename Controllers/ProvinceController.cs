@@ -77,6 +77,21 @@ public class ProvinceController: ControllerBase
 
     }
     
+    // TODO
+    // PUT update endpoint
+    
+    // TODO
+    [HttpDelete]
+    public async Task<IActionResult> ProvinceCountry(string provinceName)
+    {
+        var deleted = await _provinceService.DeleteProvinceAsync(provinceName);
+        if (deleted)
+        {
+            return Ok("Province deleted: " + provinceName);
+        }
+        return BadRequest("Province not found");
+    }
+    
     // this endpoint is secured
     // (1 --------------- Bearer Access Token) go to /login endpoint and pass your login and password:
     // curl -X 'POST' 'http://localhost:5077/login' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{
