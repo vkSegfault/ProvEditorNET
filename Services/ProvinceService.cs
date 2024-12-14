@@ -16,8 +16,20 @@ public class ProvinceService : IProvinceService
 
     public async Task CreateAsync(Province province)
     {
-        await _context.Provinces.AddAsync(province);
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.Provinces.AddAsync(province);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            // TODO
+            // handle duplicate key exception
+            Console.WriteLine("### Exception saving Province: " + e.GetBaseException().Message);
+            
+            // should it throw or just ignore (or maybe return Task<string> with info that it is duplicated??
+            throw;
+        }
     }
     
     public async Task<IEnumerable<Province>> GetAllProvincesAsync()

@@ -20,5 +20,8 @@ public class ProvinceDbContext : DbContext
             .WithOne(p => p.Country)
             .HasForeignKey(p => p.CountryId)
             .HasPrincipalKey(c => c.CountryId);
+
+        modelBuilder.Entity<Province>()
+            .HasAlternateKey(p => p.Name);
     }
 }
