@@ -14,7 +14,7 @@ public class ProvinceService : IProvinceService
         _context = context;
     }
 
-    public async Task CreateAsync(Province province)
+    public async Task<(bool success, string msg)> CreateAsync(Province province)
     {
         try
         {
@@ -23,13 +23,15 @@ public class ProvinceService : IProvinceService
         }
         catch (Exception e)
         {
-            // TODO
-            // handle duplicate key exception
-            Console.WriteLine("### Exception saving Province: " + e.GetBaseException().Message);
-            
-            // should it throw or just ignore (or maybe return Task<string> with info that it is duplicated??
-            throw;
+
+            if (e is DbUpdateException)
+            {
+                var message = e.GetBaseException().Message;
+                Console.WriteLine("==> Exception saving Province: " + message);
+                return (false, message);
+            }
         }
+        return (true, "success");
     }
     
     public async Task<IEnumerable<Province>> GetAllProvincesAsync()

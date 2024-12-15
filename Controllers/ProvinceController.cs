@@ -41,9 +41,16 @@ public class ProvinceController: ControllerBase
             return NotFound("Country not found");
         }
         var province = provinceDto.ToProvince(country);
-        await _provinceService.CreateAsync(province);
+        (bool success, string msg) created = await _provinceService.CreateAsync(province);
 
-        return Ok("Province created: " + province.Name);
+        if ( created.success )
+        {
+            return Ok("Province created: " + province.Name);
+        }
+        else
+        {
+            return BadRequest("Province creation failed: " + province.Name + " --> " + created.msg);
+        }
     }
     
     
@@ -82,7 +89,7 @@ public class ProvinceController: ControllerBase
     
     // TODO
     [HttpDelete]
-    public async Task<IActionResult> ProvinceCountry(string provinceName)
+    public async Task<IActionResult> DeleteProvince(string provinceName)
     {
         var deleted = await _provinceService.DeleteProvinceAsync(provinceName);
         if (deleted)
