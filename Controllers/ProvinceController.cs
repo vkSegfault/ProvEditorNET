@@ -84,10 +84,55 @@ public class ProvinceController: ControllerBase
 
     }
     
-    // TODO
-    // PUT update endpoint
     
     // TODO
+    // PUT update endpoint
+    [HttpPut("{name}")]
+    public async Task<IActionResult> UpdateProvince([FromRoute] string name, [FromQuery] string newProvinceName, [FromQuery] string countryName, [FromQuery] int population)
+    {
+        var province = await _provinceService.GetProvinceByNameAsync(name);
+        if ( province is not null )
+        {
+            // to update an Province.Name which is key we need to first strip of relations --> remove Country, then chnage name --> readd Country
+            if (newProvinceName is not null)
+            {
+                Country country = province.Country;
+                // TODO
+                // lines below removes whole Province from DB for some reasons
+                province.Country = null;   // remove dependent here
+                await _provinceService.SaveChangesAsync();
+                
+                province.Name = newProvinceName;
+                province.Country = country;   // readd dependent
+                
+                await _provinceService.SaveChangesAsync();
+            }
+            
+            if (countryName is not null)
+            {
+                Country country = await _countryService.GetCountryByNameAsync(countryName);
+                if (country is not null)
+                {
+                    province.Country = country;
+                }
+            }
+
+            if (population > 0)   // default for int (if not provided) is 0
+            {
+                province.Population = population;
+            }
+
+            await _provinceService.SaveChangesAsync();
+            return NoContent();
+        }
+        else
+        {
+            return NotFound("Province not found");
+        }
+
+    }
+    
+    
     [HttpDelete]
     public async Task<IActionResult> DeleteProvince(string provinceName)
     {

@@ -21,6 +21,7 @@ public class ProvinceDbContext : DbContext
             .HasForeignKey(p => p.CountryId)
             .HasPrincipalKey(c => c.CountryId);
 
+        // make Name Unique Constraint
         modelBuilder.Entity<Province>()
             .HasAlternateKey(p => p.Name);
     }

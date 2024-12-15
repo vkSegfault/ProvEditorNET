@@ -61,4 +61,9 @@ public class ProvinceService : IProvinceService
         
         return false;
     }
+
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
 }

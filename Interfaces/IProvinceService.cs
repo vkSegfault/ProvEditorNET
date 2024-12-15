@@ -8,4 +8,6 @@ public interface IProvinceService
     Task<IEnumerable<Province>> GetAllProvincesAsync();
     Task<Province> GetProvinceByNameAsync(string provinceName);
     Task<bool> DeleteProvinceAsync(string provinceName);
+    
+    Task SaveChangesAsync();
 }
