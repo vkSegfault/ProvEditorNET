@@ -23,7 +23,6 @@ public class ProvinceService : IProvinceService
         }
         catch (Exception e)
         {
-
             if (e is DbUpdateException)
             {
                 var message = e.GetBaseException().Message;

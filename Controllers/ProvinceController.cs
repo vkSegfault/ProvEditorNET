@@ -88,38 +88,40 @@ public class ProvinceController: ControllerBase
     // TODO
     // PUT update endpoint
     [HttpPut("{name}")]
-    public async Task<IActionResult> UpdateProvince([FromRoute] string name, [FromQuery] string newProvinceName, [FromQuery] string countryName, [FromQuery] int population)
+    public async Task<IActionResult> UpdateProvince([FromRoute] string name, [FromQuery] string newCountryName, [FromQuery] int newPopulation)
     {
         var province = await _provinceService.GetProvinceByNameAsync(name);
         if ( province is not null )
         {
             // to update an Province.Name which is key we need to first strip of relations --> remove Country, then chnage name --> readd Country
-            if (newProvinceName is not null)
-            {
-                Country country = province.Country;
-                // TODO
-                // lines below removes whole Province from DB for some reasons
-                province.Country = null;   // remove dependent here
-                await _provinceService.SaveChangesAsync();
-                
-                province.Name = newProvinceName;
-                province.Country = country;   // readd dependent
-                
-                await _provinceService.SaveChangesAsync();
-            }
+            // [FromQuery] string newProvinceName,
+            // if (newProvinceName is not null)
+            // {
+            //     Country country = province.Country;
+            //     // TODO
+            //     // here happens Cascading Delete ==> when parent (here Country) is deleted or child references required relation (here Province references Country) child is deleted by default
+            //      https://learn.microsoft.com/en-us/ef/core/saving/cascade-delete
+            //     // province.Country = null;   // remove dependent here
+            //     // await _provinceService.SaveChangesAsync();
+            //     
+            //     province.Name = newProvinceName;
+            //     province.Country = country;   // readd dependent
+            //     
+            //     await _provinceService.SaveChangesAsync();
+            // }
             
-            if (countryName is not null)
+            if (newCountryName is not null)
             {
-                Country country = await _countryService.GetCountryByNameAsync(countryName);
+                Country country = await _countryService.GetCountryByNameAsync(newCountryName);
                 if (country is not null)
                 {
                     province.Country = country;
                 }
             }
 
-            if (population > 0)   // default for int (if not provided) is 0
+            if (newPopulation > 0)   // default for int (if not provided) is 0
             {
-                province.Population = population;
+                province.Population = newPopulation;
             }
 
             await _provinceService.SaveChangesAsync();

@@ -12,11 +12,12 @@ public static class CountryMapper
             // TODO - change Guid.NewGuid() to Guid.CreateVersion7() once .NET 9 is released
             CountryId = Guid.NewGuid(),
             Name = countryDto.CountryName,
+            Notes = countryDto.Notes,
         };
     }
 
     public static CountryDto ToCountryDto(this Country country)
     {
-        return new CountryDto( country.Name );
+        return new CountryDto( country.Name, country.Notes );
     }
 }

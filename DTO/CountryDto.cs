@@ -1,3 +1,6 @@
 namespace ProvEditorNET.DTO;
 
-public record CountryDto( string CountryName );
+public record CountryDto( 
+    string CountryName, 
+    string Notes 
+    );
