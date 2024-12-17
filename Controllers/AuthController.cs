@@ -100,7 +100,7 @@ public class AuthController : ControllerBase
 
     // this endpoint is generally to be used only by confirmation mail we sent from calling /google endpoint - there is no other way to get confirmation token
     [HttpGet]
-    [ActionName("confirmemail")]
+    [ActionName("confirmemailcustom")]
     [AllowAnonymous]
     public async Task<IActionResult> ConfirmEmail([FromQuery] string email, [FromQuery] string token)
     {

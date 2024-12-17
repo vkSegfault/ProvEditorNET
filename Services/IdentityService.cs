@@ -77,7 +77,7 @@ public class IdentityService : IIdentityService
         var confirmEmailTokenEncoded = HttpUtility.UrlEncode(confirmEmailToken);
         Console.WriteLine("Confirmation token: " + confirmEmailToken);
 
-        string link = $"{_configuration.GetValue<string>("Host:Dev")}/api/v1/auth/confirmemail?email={email}&token={confirmEmailTokenEncoded}";
+        string link = $"{_configuration.GetValue<string>("Host:Dev")}/api/v1/auth/confirmemailcustom?email={email}&token={confirmEmailTokenEncoded}";
         Console.WriteLine("Confirmation link: " + link);
         string mailContent = $"<a href='{link}'>Verify email</a>";
         await _emailSender.SendEmailAsync("adtofaust@gmail.com", $"New User Registration: {email}", mailContent);
