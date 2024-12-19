@@ -15,6 +15,7 @@ public class ProvinceDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Country has many Provinces
         modelBuilder.Entity<Country>()
             .HasMany(c => c.Provinces)
             .WithOne(p => p.Country)
@@ -28,5 +29,12 @@ public class ProvinceDbContext : DbContext
         // make Country Name Unique Constraint
         modelBuilder.Entity<Country>()
             .HasAlternateKey(c => c.Name);
+        
+        // Province has many Resources
+        modelBuilder.Entity<Province>()
+            .HasMany(p => p.Resources)
+            .WithOne(r => r.Province)
+            .HasForeignKey(r => r.ProvinceId)
+            .HasPrincipalKey(p => p.ProvinceId);
     }
 }

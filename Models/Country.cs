@@ -18,5 +18,5 @@ public class Country : DbContext
     [Column("notes")]
     public string Notes { get; set; } = string.Empty;
     
-    public ICollection<Province> Provinces { get; }
+    public ICollection<Province> Provinces { get; set; }
 }

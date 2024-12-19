@@ -98,7 +98,6 @@ public class IdentityService : IIdentityService
                 Console.WriteLine(valid);
                 Console.WriteLine($"Email {email} verified");
                 return true;
-                
             }
             else
             {

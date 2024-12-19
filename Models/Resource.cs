@@ -19,4 +19,8 @@ public class Resource : DbContext
 
     [Column("notes")]
     public string Notes { get; set; } = string.Empty;
+    
+    // navigation key
+    public Guid ProvinceId { get; set; }
+    public Province Province { get; set; }
 }
