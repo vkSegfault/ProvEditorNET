@@ -8,15 +8,8 @@ namespace ProvEditorNET.Mappers;
 public static class ProvinceMapper
 {
     
-    public static Province ToProvince(this ProvinceDto provinceDto, Country country)
+    public static Province ToProvince(this ProvinceDto provinceDto, Country country, ICollection<Resource> resources)
     {
-        ICollection<Resource> resources = new List<Resource>();
-        foreach (var resurce in provinceDto.Resources)
-        {
-            // we can't use DI so no Resource Service to use...
-            var resource = 
-        }
-        
         return new Province
         {
             // TODO - change Guid.NewGuid() to Guid.CreateVersion7() once .NET 9 is released
@@ -24,17 +17,22 @@ public static class ProvinceMapper
             Name = provinceDto.ProvinceName,
             Country = country,
             Population = provinceDto.Population,
-            Resources = provinceDto.Resources
+            Resources = resources
         };
     }
 
     public static ProvinceDto ToProvinceDto(this Province province)
     {
+        ICollection<string> resourcesStr = new List<string>();
+        foreach (var resource in province.Resources)
+        {
+            resourcesStr.Append( resource.Name );
+        }
         return new ProvinceDto( 
             province.Name, 
             province.Country.Name, 
             province.Population,
-            province.Resources
+            resourcesStr
             );
     }
 }
