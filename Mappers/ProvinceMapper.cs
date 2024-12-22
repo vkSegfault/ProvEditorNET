@@ -8,7 +8,7 @@ namespace ProvEditorNET.Mappers;
 public static class ProvinceMapper
 {
     
-    public static Province ToProvince(this ProvinceDto provinceDto, Country country, ICollection<Resource> resources)
+    public static Province ToProvince(this ProvinceDto provinceDto, Country country, IEnumerable<Resource> resources)
     {
         return new Province
         {

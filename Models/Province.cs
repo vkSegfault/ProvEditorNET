@@ -23,5 +23,5 @@ public class Province : DbContext
     [Column("population")]
     public int Population { get; set; }
 
-    public ICollection<Resource> Resources { get; set; }
+    public IEnumerable<Resource> Resources { get; set; }
 }

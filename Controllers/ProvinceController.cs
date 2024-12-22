@@ -15,11 +15,13 @@ public class ProvinceController: ControllerBase
 {
     private readonly IProvinceService _provinceService;
     private readonly ICountryService _countryService;
+    private readonly IResourceService _resourceService;
 
-    public ProvinceController(IProvinceService provinceService, ICountryService countryService)
+    public ProvinceController(IProvinceService provinceService, ICountryService countryService, IResourceService resourceService)
     {
         _provinceService = provinceService;
         _countryService = countryService;
+        _resourceService = resourceService;
     }
     
     
@@ -40,7 +42,10 @@ public class ProvinceController: ControllerBase
         {
             return NotFound("Country not found");
         }
-        var province = provinceDto.ToProvince(country);
+        
+        IEnumerable<Resource> resources = await _resourceService.GetResourcesFromStringListAsync( provinceDto.Resources );
+        var province = provinceDto.ToProvince(country, resources);
+        
         (bool success, string msg) created = await _provinceService.CreateAsync(province);
 
         if ( created.success )

@@ -7,5 +7,6 @@ public interface IResourceService
     Task CreateAsync(Resource resource);
     Task<IEnumerable<Resource>> GetAllResourcesAsync();
     Task<Resource> GetResourceByNameAsync(string resourceName);
+    Task<IEnumerable<Resource>> GetResourcesFromStringListAsync(IEnumerable<string> resourceNames);
     Task<bool> DeleteResourceAsync(string resourceName);
 }

@@ -4,5 +4,5 @@ public record ProvinceDto(
     string ProvinceName, 
     string CountryName,
     int Population,
-    ICollection<string> Resources
+    IEnumerable<string> Resources
     );

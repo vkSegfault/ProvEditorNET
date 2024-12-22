@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
 using ProvEditorNET.Repository;
@@ -15,29 +16,40 @@ public class ResourceService : IResourceService
 
     public async Task CreateAsync(Resource resource)
     {
-        await _context.Res.AddAsync(resource);
+        await _context.Resources.AddAsync(resource);
         await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Country>> GetAllCountriesAsync()
+    public async Task<IEnumerable<Resource>> GetAllResourcesAsync()
     {
-        var countries = await _context.Countries.ToListAsync();
-        return countries;
+        var resources = await _context.Resources.ToListAsync();
+        return resources;
     }
 
-    public async Task<Country> GetCountryByNameAsync(string countryName)
+    public async Task<Resource> GetResourceByNameAsync(string resourceName)
     {
-        var country = await _context.Countries.FirstOrDefaultAsync(x => x.Name == countryName);
-        return country;
+        var resource = await _context.Resources.FirstOrDefaultAsync(x => x.Name == resourceName);
+        return resource;
+    }
+
+    public async Task<IEnumerable<Resource>> GetResourcesFromStringListAsync(IEnumerable<string> resourceNames)
+    {
+        IEnumerable<Resource> resources = new List<Resource>();
+        foreach (var resourceName in resourceNames)
+        {
+            resources.Append( await GetResourceByNameAsync(resourceName) );
+        }
+        
+        return resources;
     }
     
-    public async Task<bool> DeleteCountryAsync(string countryName)
+    public async Task<bool> DeleteResourceAsync(string resourceName)
     {
-        var country = await _context.Countries.FirstOrDefaultAsync(x => x.Name == countryName);
-        if (country != null)
+        var resource = await _context.Resources.FirstOrDefaultAsync(x => x.Name == resourceName);
+        if (resource != null)
         {
-            _context.Countries.Remove(country);
-            Console.WriteLine("Country deleted: " + countryName );
+            _context.Resources.Remove(resource);
+            Console.WriteLine("Country deleted: " + resourceName );
             await _context.SaveChangesAsync();
             return true;
         }
