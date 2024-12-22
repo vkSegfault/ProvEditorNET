@@ -28,7 +28,7 @@ public class RoleController : ControllerBase
     
     [HttpPost]
     [ActionName("Add")]
-    [AllowAnonymous] // TODO - remove allowAnonymous
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> AddRole([FromBody] RoleDto roleDto)
     {
         await _identityService.CreateRoleAsync(roleDto.RoleName);
@@ -99,6 +99,8 @@ public class RoleController : ControllerBase
     
     // premise of this endpoint is to give admin rights to first registered user
     // call it just after first registration
+    // TODO
+    // call this functionallity upon user registration - we check if registered user is first one in DB, if it is then give him admin rights
     [HttpGet]
     [ActionName("giveadminrights")]
     [AllowAnonymous]
