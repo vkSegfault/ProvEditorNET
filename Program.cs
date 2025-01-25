@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
 using ProvEditorNET.Repository;
@@ -117,6 +118,21 @@ builder.Services.AddSwaggerGen(c => {
     c.CustomSchemaIds(type => type.FullName);
 });
 
+// telemetry, Promotheus, Grafana
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(x =>
+    {
+        x.AddPrometheusExporter();  // export dotnet app data to Prometheus
+        x.AddMeter(
+            "Microsoft.AspNetCore.Hosting",
+            "Microsoft.AspNetCore.Server.Kestrel");
+        x.AddView("request-duration",
+            new ExplicitBucketHistogramConfiguration
+            {
+                Boundaries = new [] { 0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75 }
+            });
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -132,6 +148,8 @@ else
     app.UseCors("AllowSpecificOrigin");
 }
 
+
+app.MapPrometheusScrapingEndpoint();  // expose endpoint for Promoetheus (http://<HOST>:<PORT>/metrics)
 app.MapGroup("api/v1/auth").MapIdentityApi<IdentityUser>();   // used for crude Authorization directly from Identity package (without any custom changes)
 // app.MapIdentityApi<User>();
 app.UseHttpsRedirection();
