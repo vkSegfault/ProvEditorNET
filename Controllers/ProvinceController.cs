@@ -43,7 +43,8 @@ public class ProvinceController: ControllerBase
             return NotFound("Country not found");
         }
         
-        IEnumerable<Resource> resources = await _resourceService.GetResourcesFromStringListAsync( provinceDto.Resources );
+        ICollection<Resource> resources = await _resourceService.GetResourcesFromStringListAsync( provinceDto.Resources );
+        Console.WriteLine( "### Resources ###" + resources );
         var province = provinceDto.ToProvince(country, resources);
         
         (bool success, string msg) created = await _provinceService.CreateAsync(province);

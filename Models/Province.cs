@@ -23,5 +23,11 @@ public class Province : DbContext
     [Column("population")]
     public int Population { get; set; }
 
-    public IEnumerable<Resource> Resources { get; set; }
+    // navigation key
+    // public Guid ResourceId { get; set; }
+    // public Resource Resource { get; set; }
+
+    public List<Resource> Resources { get; set; } = [];
+    // public ICollection<ProvinceResource> ProvinceResources { get; set; }  // "Skip Navigation" used by EF Core to create Joint Entity to map many-to-many
+
 }

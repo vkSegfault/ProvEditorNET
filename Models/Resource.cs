@@ -19,8 +19,11 @@ public class Resource : DbContext
 
     [Column("notes")]
     public string Notes { get; set; } = string.Empty;
-    
+
+    public List<Province> Provinces { get; set; } = [];
+    // public ICollection<ProvinceResource> ProvinceResources { get; set; }  // "Skip Navigation" used by EF Core to create Joint Entity to map many-to-many
+
     // navigation key
-    public Guid ProvinceId { get; set; }
-    public Province Province { get; set; }
+    // public Guid ProvinceId { get; set; }
+    // public Province Province { get; set; }
 }

@@ -32,9 +32,9 @@ public class ResourceService : IResourceService
         return resource;
     }
 
-    public async Task<IEnumerable<Resource>> GetResourcesFromStringListAsync(IEnumerable<string> resourceNames)
+    public async Task<ICollection<Resource>> GetResourcesFromStringListAsync(IEnumerable<string> resourceNames)
     {
-        IEnumerable<Resource> resources = new List<Resource>();
+        ICollection<Resource> resources = new List<Resource>();
         foreach (var resourceName in resourceNames)
         {
             resources.Append( await GetResourceByNameAsync(resourceName) );
