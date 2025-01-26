@@ -10,3 +10,9 @@ DB migrations:
 `dotnet ef migrations add NewMigrationName --context ProvinceDbContext` - when our Models changed we need to add new migration (remember to apply it)
 `dotnet ef database update --context ProvinceDbContext` - apply any local migrations to DB
 `dotnet ef migrations remove --context ProvinceDbContext`
+
+Note that every Context we create should be applied one by one, to list Contexts:
+`dotnet ef dbcontext list`
+
+
+---
