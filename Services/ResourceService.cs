@@ -37,7 +37,15 @@ public class ResourceService : IResourceService
         ICollection<Resource> resources = new List<Resource>();
         foreach (var resourceName in resourceNames)
         {
-            resources.Append( await GetResourceByNameAsync(resourceName) );
+            Console.WriteLine( "DBG ## " + resourceName);
+            Resource resource = await GetResourceByNameAsync(resourceName);
+            Console.WriteLine( "RES NAME: --> " + resource.Name);
+            resources.Add( resource );
+        }
+
+        foreach (var resource in resources)
+        {
+            Console.WriteLine( "DBG2 ### " + resource.Name);
         }
         
         return resources;

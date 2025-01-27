@@ -7,6 +7,7 @@ If you get: "Cannot access a disposed context instance..."
 
 DB migrations:
 `dotnet ef migrations add init --context ProvinceDbContext` - init
+`dotnet ef migrations add init --context IdentityDbContext`
 `dotnet ef migrations add NewMigrationName --context ProvinceDbContext` - when our Models changed we need to add new migration (remember to apply it)
 `dotnet ef database update --context ProvinceDbContext` - apply any local migrations to DB
 `dotnet ef migrations remove --context ProvinceDbContext`

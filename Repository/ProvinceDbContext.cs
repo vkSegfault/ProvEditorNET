@@ -33,16 +33,16 @@ public class ProvinceDbContext : DbContext
             .HasAlternateKey(c => c.Name);
         
         // many Provinces have many Resources (many to many)
+        // note that EF Core will create Joint Table underneath (ProvinceResource) to map many-to-many
         modelBuilder.Entity<Province>()
             .HasMany(p => p.Resources)
             .WithMany(r => r.Provinces);
+        // BELOW IS MANUAL IMPL OF WHAT EF CORE IS DOING AUTOMATICALLY FOR US
         // .UsingEntity(
         //     "ProvinceResource",
         //     l => l.HasOne(typeof(Resource)).WithMany().HasForeignKey("ResourcesId").HasPrincipalKey(nameof(Resource.ResourceId)),
         //     r => r.HasOne(typeof(Province)).WithMany().HasForeignKey("ProvincesId").HasPrincipalKey(nameof(Province.ProvinceId)),
         //     j => j.HasKey("ProvincesId", "ResourcesId")
         //     );
-        // .HasForeignKey(r => r.ProvinceId)
-        // .HasPrincipalKey(p => p.ProvinceId);
     }
 }

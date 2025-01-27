@@ -26,7 +26,7 @@ public static class ProvinceMapper
         ICollection<string> resourcesStr = new List<string>();
         foreach (var resource in province.Resources)
         {
-            resourcesStr.Append( resource.Name );
+            resourcesStr.Add( resource.Name );
         }
         return new ProvinceDto( 
             province.Name, 

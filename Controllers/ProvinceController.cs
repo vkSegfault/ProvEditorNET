@@ -44,8 +44,9 @@ public class ProvinceController: ControllerBase
         }
         
         ICollection<Resource> resources = await _resourceService.GetResourcesFromStringListAsync( provinceDto.Resources );
-        Console.WriteLine( "### Resources ###" + resources );
+        
         var province = provinceDto.ToProvince(country, resources);
+        Console.WriteLine( "DupA " + province.Resources.Count + " resources" );
         
         (bool success, string msg) created = await _provinceService.CreateAsync(province);
 

@@ -16,6 +16,12 @@ public class ProvinceService : IProvinceService
 
     public async Task<(bool success, string msg)> CreateAsync(Province province)
     {
+        Console.WriteLine("Called ProvinceService.CreateAsync");
+        foreach (var res in province.Resources)
+        {
+            Console.WriteLine( "Resource: " + res.Name);
+        }
+        
         try
         {
             await _context.Provinces.AddAsync(province);
@@ -35,7 +41,7 @@ public class ProvinceService : IProvinceService
     
     public async Task<IEnumerable<Province>> GetAllProvincesAsync()
     {
-        var provinces = await _context.Provinces.Include(p => p.Country).ToListAsync();
+        var provinces = await _context.Provinces.Include(p => p.Country).Include(p => p.Resources).ToListAsync();
         return provinces;
     }
 
@@ -43,7 +49,8 @@ public class ProvinceService : IProvinceService
     {
         // .Include() does eager loading of Country relation as a part of Province query to DB
         // https://learn.microsoft.com/en-us/ef/core/querying/related-data/
-        var province = await _context.Provinces.Include(p => p.Country).FirstOrDefaultAsync(x => x.Name == provinceName);
+        var province = await _context.Provinces.Include(p => p.Country).Include(p => p.Resources).FirstOrDefaultAsync(x => x.Name == provinceName);
+        
         return province;
     }
     
