@@ -29,6 +29,11 @@ public class ResourceService : IResourceService
     public async Task<Resource> GetResourceByNameAsync(string resourceName)
     {
         var resource = await _context.Resources.FirstOrDefaultAsync(x => x.Name == resourceName);
+
+        if (resource is null)
+        {
+            throw new NullReferenceException("Resource not found: " + resourceName);
+        }
         return resource;
     }
 
@@ -37,15 +42,8 @@ public class ResourceService : IResourceService
         ICollection<Resource> resources = new List<Resource>();
         foreach (var resourceName in resourceNames)
         {
-            Console.WriteLine( "DBG ## " + resourceName);
             Resource resource = await GetResourceByNameAsync(resourceName);
-            Console.WriteLine( "RES NAME: --> " + resource.Name);
             resources.Add( resource );
-        }
-
-        foreach (var resource in resources)
-        {
-            Console.WriteLine( "DBG2 ### " + resource.Name);
         }
         
         return resources;

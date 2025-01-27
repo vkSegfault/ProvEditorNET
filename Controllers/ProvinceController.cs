@@ -42,8 +42,16 @@ public class ProvinceController: ControllerBase
         {
             return NotFound("Country not found");
         }
-        
-        ICollection<Resource> resources = await _resourceService.GetResourcesFromStringListAsync( provinceDto.Resources );
+
+        ICollection<Resource> resources;
+        try
+        {
+            resources = await _resourceService.GetResourcesFromStringListAsync( provinceDto.Resources );
+        }
+        catch (Exception e)
+        {
+            return BadRequest("Resource not found: " + e.Message);
+        }
         
         var province = provinceDto.ToProvince(country, resources);
         Console.WriteLine( "DupA " + province.Resources.Count + " resources" );
