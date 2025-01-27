@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;

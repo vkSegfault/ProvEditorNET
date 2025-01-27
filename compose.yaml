@@ -24,6 +24,7 @@
     volumes:
       - ./prometheus:/etc/prometheus
       - prom_data:/prometheus
+    network_mode: host
 
   grafana:
     image: grafana/grafana
@@ -36,8 +37,14 @@
       - GF_SECURITY_ADMIN_PASSWORD=pass
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
+    network_mode: host
     depends_on:
       - prometheus
 
 volumes:
   prom_data:
+    
+networks:
+  network:
+    
+# we probably need to put Promtehus and Grafana tohether in one network !

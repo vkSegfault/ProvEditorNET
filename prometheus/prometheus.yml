@@ -18,4 +18,18 @@ scrape_configs:
     scheme: http
     static_configs:
       - targets:
-          - localhost:9090
+          # if our app runs in K8s cluster then svc name is host
+          # if our app runs in another container then IP of the peer container
+          - localhost:9090   # localhost inside container is not localhost of machine it runs on!
+            
+  - job_name: province_editor
+    honor_timestamps: true
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets:
+          # if our app runs in K8s cluster then svc name is host
+          # if our app runs in another container then IP of the peer container
+          - localhost:5077   # this only works because we set in docker compose that Prometheus will use: network: host"
