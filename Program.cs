@@ -119,20 +119,23 @@ builder.Services.AddSwaggerGen(c => {
     c.CustomSchemaIds(type => type.FullName);
 });
 
-// telemetry, Promotheus, Grafana
+// Open Telemetry, Promotheus, Grafana - data provided by NET Core itself
 builder.Services.AddOpenTelemetry()
     .WithMetrics(x =>
     {
-        x.AddPrometheusExporter();  // export dotnet app data to Prometheus
-        x.AddMeter(
-            "Microsoft.AspNetCore.Hosting",
-            "Microsoft.AspNetCore.Server.Kestrel");
+        x.AddMeter("Microsoft.AspNetCore.Hosting");
+        x.AddMeter("Microsoft.AspNetCore.Server.Kestrel");
+        x.AddMeter("CountryAddedMeter");
         x.AddView("request-duration",
             new ExplicitBucketHistogramConfiguration
             {
                 Boundaries = new [] { 0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75 }
             });
+        x.AddPrometheusExporter();  // export dotnet app data to Prometheus
     });
+
+// add our custom matrics defined in endpoints
+builder.Services.AddMetrics();
 
 var app = builder.Build();
 

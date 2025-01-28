@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProvEditorNET.DTO;
@@ -13,10 +14,12 @@ namespace ProvEditorNET.Controllers;
 public class CountryController : ControllerBase
 {
     private readonly ICountryService _countryService;
+    private readonly IMeterFactory _meterFactory;
 
-    public CountryController(ICountryService countryService)
+    public CountryController(ICountryService countryService, IMeterFactory meterFactory)
     {
         _countryService = countryService;
+        _meterFactory = meterFactory;
     }
     
     [HttpPost]
@@ -24,6 +27,10 @@ public class CountryController : ControllerBase
     {
         var country = countryDto.ToCountry();
         await _countryService.CreateAsync(country);
+        
+        var meter = _meterFactory.Create("CountryAddedMeter");
+        var instrument = meter.CreateCounter<int>("country_added_counter");
+        instrument.Add(1);   // add 1 to this meter everytime we add Country
 
         return Ok();
     }
@@ -34,7 +41,7 @@ public class CountryController : ControllerBase
     {
         var countryList = await _countryService.GetAllCountriesAsync();
         var countryDtoList = countryList.Select(i => i.ToCountryDto());
-
+        
         // don't return List<> here (which is lazy-evaluated) cause we will get strange error about missing DbContext - misleading as fcuk
         // just return IEnumerable
         return Ok(countryDtoList);
