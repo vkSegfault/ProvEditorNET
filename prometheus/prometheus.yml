@@ -31,5 +31,14 @@ scrape_configs:
     static_configs:
       - targets:
           # if our app runs in K8s cluster then svc name is host
-          # if our app runs in another container then IP of the peer container
-          - localhost:5077   # this only works because we set in docker compose that Prometheus will use: network: host"
+          # if our app runs in another container then name of the that container
+          - localhost:5077   # this only works because we set in docker compose that Prometheus will use: "network: host"
+          - docker.host:5077
+          - host.docker.internal:5077
+          - docker.host.internal:5077
+          - 172.17.0.1:5077
+          - 192.168.0.19:5077
+          - 172.18.0.1:5077
+          - <k8s_svc_name>:5077
+          - <docker_container_name>:5077
+          - 127.0.0.1:5077

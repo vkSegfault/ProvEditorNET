@@ -24,7 +24,13 @@
     volumes:
       - ./prometheus:/etc/prometheus
       - prom_data:/prometheus
-    network_mode: host
+    networks:
+      - monitoring
+    extra_hosts:
+      - host.docker.internal:172.17.0.1
+      - docker.host.internal:172.17.0.1
+      - docker.host:127.0.0.1   # ip addr show | grep "\binet\b.*\bdocker0\b" | awk '{print $2}' | cut -d '/' -f 1
+#    network_mode: host   # TURN IT OFF IN PROD as it disabled docker network and basically open container network to host
 
   grafana:
     image: grafana/grafana
@@ -37,14 +43,17 @@
       - GF_SECURITY_ADMIN_PASSWORD=pass
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
-    network_mode: host
+#    network_mode: host   # TURN IT OFF IN PROD as it disabled docker network
+    networks:
+      - monitoring
     depends_on:
       - prometheus
 
 volumes:
   prom_data:
-    
+
 networks:
-  network:
+  monitoring:
+    driver: bridge
     
 # we probably need to put Promtehus and Grafana tohether in one network !
