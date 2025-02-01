@@ -38,4 +38,7 @@ public class Infrastructure : DbContext
     
     [Column("notes")]
     public string Notes { get; set; } = string.Empty;
+    
+    // Navigation for EF Core
+    public List<Province> Provinces { get; set; } = [];
 }

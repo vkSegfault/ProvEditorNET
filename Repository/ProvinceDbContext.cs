@@ -13,7 +13,7 @@ public class ProvinceDbContext : DbContext
     public DbSet<Province> Provinces { get; set; }
     public DbSet<Country> Countries { get; set; }
     public DbSet<Resource> Resources { get; set; }
-    // public DbSet<ProvinceResource> ProvinceResources { get; set; }
+    public DbSet<Infrastructure> Infrastructures { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,5 +44,15 @@ public class ProvinceDbContext : DbContext
         //     r => r.HasOne(typeof(Province)).WithMany().HasForeignKey("ProvincesId").HasPrincipalKey(nameof(Province.ProvinceId)),
         //     j => j.HasKey("ProvincesId", "ResourcesId")
         //     );
+        
+        // many Provinces have many Infrastructure objects (many to many)
+        modelBuilder.Entity<Province>()
+            .HasMany(p => p.Infrastructures)
+            .WithMany(i => i.Provinces);
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseNpgsql(
+            o => o.UseNetTopologySuite()
+        );
 }
