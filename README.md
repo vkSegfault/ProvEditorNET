@@ -1,3 +1,5 @@
+docker compose up --build
+
 Province Editor: http://localhost:5077
 Swagger: http://localhost:5077/swagger
 OpenTelemetry metrics (consumed by Prometheus): http://localhost:5077/metrics

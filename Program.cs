@@ -154,7 +154,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    // TODO - disable Swagger in prod
+    // TODO - disable Swagger in prod/Release builds
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("AllowSpecificOrigin");
