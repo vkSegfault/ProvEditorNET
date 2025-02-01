@@ -37,6 +37,7 @@
     volumes:
       - ./prometheus:/etc/prometheus
       - prom_data:/prometheus
+      - ./prometheus/alertmanager/rules.yml:/etc/prometheus/rules.yml
     networks:
       - backend
       - ops
@@ -100,6 +101,15 @@
       - ops
     deploy:
       mode: global
+
+  alert-manager:
+    image: prom/alertmanager
+    volumes:
+      - "./promethesu/alertmanager/alertmanager.yml:/alertmanager/alertmanager.yml"
+    networks:
+      - ops
+    ports:
+      - "9093:9093"
 
 volumes:
   prom_data: {}
