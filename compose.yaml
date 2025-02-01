@@ -44,6 +44,9 @@
       - proveditor
     extra_hosts:
       - host.docker.internal:host-gateway
+    links:
+      - cadvisor:cadvisor
+      - node-exporter:node-exporter
 
   grafana:
     image: grafana/grafana
@@ -55,15 +58,52 @@
       - GF_SECURITY_ADMIN_USER=user
       - GF_SECURITY_ADMIN_PASSWORD=pass
     volumes:
+      - grafana-storage:/var/lib/grafana
       - ./grafana:/etc/grafana/provisioning/datasources
     networks:
       - ops
     depends_on:
       - prometheus
+  
+  # Monitoring Your Host Environment
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    expose:
+      - 9100
+    networks:
+      - ops
 
+  # Monitoring Your Docker Environment
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    container_name: monitoring_cadvisor
+    restart: unless-stopped
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    expose:
+      - 8080
+    networks:
+      - ops
+    deploy:
+      mode: global
 
 volumes:
-  prom_data:
+  prom_data: {}
+  grafana-storage: {}
 
 networks:
   ops:

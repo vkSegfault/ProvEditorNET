@@ -4,3 +4,23 @@ GET {{ProvEditorNET_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST http://localhost:3000/api/dashboards/db HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJrIjoiT0tTcG1pUlY2RnVKZTFVaDFsNFZXdE9ZWmNrMkZYbk
+
+{
+  "dashboard": {
+    "id": 19924,
+    "uid": null,
+    "title": "Production Overview",
+    "tags": [ "templated" ],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "refresh": "25s"
+  },
+  "folderUid": "l3KqBxCMz",
+  "message": "Made changes to xyz",
+  "overwrite": false
+}
