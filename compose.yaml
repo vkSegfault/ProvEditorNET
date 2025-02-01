@@ -4,7 +4,7 @@
     image: postgres
     container_name: postgres-provinces
     ports:
-      - 5432:5432
+      - "5432:5432"
     restart: unless-stopped
     environment:
       POSTGRES_USER: user
@@ -12,6 +12,18 @@
       POSTGRES_DB: mydb
     volumes:
       - /home/atf/db/wealthofnation-postgres:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  proveditor:
+    build: .
+    container_name: proveditor
+    ports:
+      - "5077:8080"
+    depends_on:
+      - postgres
+    networks:
+      - backend
 
   prometheus:
     image: prom/prometheus
@@ -19,41 +31,43 @@
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
-      - 9090:9090
+      - "9090:9090"
+#      - "5077:5077"
     restart: unless-stopped
     volumes:
       - ./prometheus:/etc/prometheus
       - prom_data:/prometheus
     networks:
-      - monitoring
+      - backend
+      - ops
+    depends_on:
+      - proveditor
     extra_hosts:
-      - host.docker.internal:172.17.0.1
-      - docker.host.internal:172.17.0.1
-      - docker.host:127.0.0.1   # ip addr show | grep "\binet\b.*\bdocker0\b" | awk '{print $2}' | cut -d '/' -f 1
-#    network_mode: host   # TURN IT OFF IN PROD as it disabled docker network and basically open container network to host
+      - host.docker.internal:host-gateway
 
   grafana:
     image: grafana/grafana
     container_name: grafana
     ports:
-      - 3000:3000
+      - "3000:3000"
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_USER=user
       - GF_SECURITY_ADMIN_PASSWORD=pass
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
-#    network_mode: host   # TURN IT OFF IN PROD as it disabled docker network
     networks:
-      - monitoring
+      - ops
     depends_on:
       - prometheus
+
 
 volumes:
   prom_data:
 
 networks:
-  monitoring:
-    driver: bridge
-    
+  ops:
+  backend:
+  frontend:
+
 # we probably need to put Promtehus and Grafana tohether in one network !

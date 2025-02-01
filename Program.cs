@@ -36,14 +36,19 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+#if(DEBUG)
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+#else
+string connectionString = builder.Configuration.GetConnectionString("DockerConnection");
+#endif
 
 builder.Services.AddDbContext<IdentityDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql( connectionString );
 });
 builder.Services.AddDbContext<ProvinceDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseNpgsql( connectionString );
 });
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -149,7 +154,11 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    // TODO - disable Swagger in prod
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.UseCors("AllowSpecificOrigin");
+    // app.UseCors("AllowAllOrigin");
 }
 
 
