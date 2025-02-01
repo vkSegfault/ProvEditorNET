@@ -53,6 +53,7 @@ public class ProvinceDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseNpgsql(
+            // for use Point type in Postgres
             o => o.UseNetTopologySuite()
         );
 }

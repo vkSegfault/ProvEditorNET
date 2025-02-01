@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
@@ -33,7 +34,7 @@ public class Province : DbContext
     // Postgres DB needs extension on it's side: CREATE EXTENSION postgis;
     [Required]
     [Column("shape")]
-    public Point Shape { get; set; }
+    public Point Shape { get; set; } = new Point(0, 0);
     
     [Required]
     [Column("population")]
