@@ -14,10 +14,13 @@ public static class ProvinceMapper
         {
             // TODO - change Guid.NewGuid() to Guid.CreateVersion7() once .NET 9 is released
             ProvinceId = Guid.NewGuid(),
+            ProvinceType = provinceDto.ProvinceType,
             Name = provinceDto.ProvinceName,
+            Notes = provinceDto.Notes,
             Country = country,
             Population = provinceDto.Population,
-            Resources = resources.ToList()
+            Resources = resources.ToList(),
+            Infrastructures = provinceDto.Infrastructures.ToList()
         };
     }
 
@@ -28,11 +31,19 @@ public static class ProvinceMapper
         {
             resourcesStr.Add( resource.Name );
         }
+        
+        ICollection<string> infrastructursStr = new List<string>();
+        // TODO - call fetch infra list like with resources above
+        
         return new ProvinceDto( 
+            Enum.GetName(province.ProvinceType),
             province.Name, 
             province.Country.Name, 
+            province.Notes,
+            province.Shape,
             province.Population,
-            resourcesStr
+            resourcesStr,
+            infrastructureStr
             );
     }
 }
