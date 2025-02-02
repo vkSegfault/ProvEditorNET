@@ -24,6 +24,7 @@ builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IProvinceService, ProvinceService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IResourceService, ResourceService>();
+builder.Services.AddScoped<IInfrastructureService, InfrastructureService>();
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme

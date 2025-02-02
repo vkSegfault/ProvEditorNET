@@ -2,7 +2,7 @@
 
   postgres:
 #    image: postgres:17.2
-    image: postgis/postgis:17-3.5   # postgres with Postgis extension installed, eneter running container with psql and call "CREATE EXTENSION postgis;"
+    image: postgis/postgis:17-3.5   # postgres with Postgis extension installed, eneter running container with psql and call "CREATE EXTENSION postgis;" with ansible use: psql mydatabasename -c "CREATE EXTENSION postgis";
     container_name: postgres-provinces
     ports:
       - "5432:5432"
@@ -16,15 +16,15 @@
     networks:
       - backend
 
-  proveditor:
-    build: .
-    container_name: proveditor
-    ports:
-      - "5077:8080"
-    depends_on:
-      - postgres
-    networks:
-      - backend
+#  proveditor:
+#    build: .
+#    container_name: proveditor
+#    ports:
+#      - "5077:8080"
+#    depends_on:
+#      - postgres
+#    networks:
+#      - backend
 
   prometheus:
     image: prom/prometheus
@@ -42,8 +42,8 @@
     networks:
       - backend
       - ops
-    depends_on:
-      - proveditor
+#    depends_on:
+#      - proveditor
     extra_hosts:
       - host.docker.internal:host-gateway
     links:
