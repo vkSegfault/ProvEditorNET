@@ -1,5 +1,3 @@
-using NetTopologySuite.Geometries;
-
 namespace ProvEditorNET.DTO;
 
 public record ProvinceDto(
@@ -7,7 +5,7 @@ public record ProvinceDto(
     string ProvinceName,
     string CountryName,
     string Notes,
-    Point Shape,
+    List<int> Shape,
     int Population,
     IEnumerable<string> Resources,
     IEnumerable<string> Infrastructures

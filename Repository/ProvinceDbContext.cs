@@ -51,9 +51,9 @@ public class ProvinceDbContext : DbContext
             .WithMany(i => i.Provinces);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql(
-            // for use Point type in Postgres
-            o => o.UseNetTopologySuite()
-        );
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //     => optionsBuilder.UseNpgsql(
+    //         // for use Point type in Postgres
+    //         o => o.UseNetTopologySuite()
+    //     );
 }

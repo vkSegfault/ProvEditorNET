@@ -16,12 +16,14 @@ public class ProvinceController: ControllerBase
     private readonly IProvinceService _provinceService;
     private readonly ICountryService _countryService;
     private readonly IResourceService _resourceService;
+    private readonly IInfrastructureService _infrastructureService;
 
-    public ProvinceController(IProvinceService provinceService, ICountryService countryService, IResourceService resourceService)
+    public ProvinceController(IProvinceService provinceService, ICountryService countryService, IResourceService resourceService, IInfrastructureService infrastructureService)
     {
         _provinceService = provinceService;
         _countryService = countryService;
         _resourceService = resourceService;
+        _infrastructureService = infrastructureService;
     }
     
     
@@ -33,7 +35,8 @@ public class ProvinceController: ControllerBase
     {
         return Ok(true);
     }
-
+    
+    
     [HttpPost]
     public async Task<ActionResult<Province>> CreateProvince([FromBody] ProvinceDto provinceDto)
     {
@@ -53,8 +56,17 @@ public class ProvinceController: ControllerBase
             return BadRequest("Resource not found: " + e.Message);
         }
         
-        var province = provinceDto.ToProvince(country, resources);
-        Console.WriteLine( "DupA " + province.Resources.Count + " resources" );
+        ICollection<Infrastructure> infrastructures;
+        try
+        {
+            infrastructures = await _infrastructureService.GetInfrastructuresFromStringListAsync( provinceDto.Infrastructures );
+        }
+        catch (Exception e)
+        {
+            return BadRequest("Infrastructure not found: " + e.Message);
+        }
+        
+        var province = provinceDto.ToProvince(country, resources, infrastructures);
         
         (bool success, string msg) created = await _provinceService.CreateAsync(province);
 

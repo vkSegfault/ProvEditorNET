@@ -1,8 +1,7 @@
 ﻿services:
 
   postgres:
-#    image: postgres:17.2
-    image: postgis/postgis:17-3.5   # postgres with Postgis extension installed, eneter running container with psql and call "CREATE EXTENSION postgis;" with ansible use: psql mydatabasename -c "CREATE EXTENSION postgis";
+    image: postgres:17.2
     container_name: postgres-provinces
     ports:
       - "5432:5432"

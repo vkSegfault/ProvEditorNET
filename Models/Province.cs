@@ -1,8 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
 
 namespace ProvEditorNET.Models;
 
@@ -16,7 +14,7 @@ public class Province : DbContext
     [Required]
     [Column("provinceType")]
     [MaxLength(10)]
-    public ProvinceType ProvinceType { get; set; }
+    public string ProvinceType { get; set; }
     
     [Required]
     [Column("provinceName")]
@@ -34,7 +32,7 @@ public class Province : DbContext
     // Postgres DB needs extension on it's side: CREATE EXTENSION postgis;
     [Required]
     [Column("shape")]
-    public Point Shape { get; set; } = new Point(0, 0);
+    public List<int> Shape { get; set; }
     
     [Required]
     [Column("population")]
@@ -50,9 +48,9 @@ public class Province : DbContext
     public List<Infrastructure> Infrastructures { get; set; } = [];
 }
 
-public enum ProvinceType : ushort
+public static class ProvinceType
 {
-    Land = 0,
-    City = 1,
-    Sea = 2
+    public static readonly string Land  = "Land";
+    public static readonly string City  = "City";
+    public static readonly string Sea  = "Sea";
 }

@@ -31,6 +31,18 @@ public class InfrastructureService : IInfrastructureService
         var infrastructure = await _context.Infrastructures.FirstOrDefaultAsync(x => x.Name == infrastructureName);
         return infrastructure;
     }
+
+    public async Task<ICollection<Infrastructure>> GetInfrastructuresFromStringListAsync(IEnumerable<string> infrastructureNames)
+    {
+        ICollection<Infrastructure> infrastructures = new List<Infrastructure>();
+        foreach (var infraName in infrastructureNames)
+        {
+            Infrastructure infrastructure = await GetInfrastructureByNameAsync(infraName);
+            infrastructures.Add( infrastructure );
+        }
+        
+        return infrastructures;
+    }
     
     public async Task<bool> DeleteAsync(string infrastructureName)
     {

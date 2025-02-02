@@ -8,7 +8,7 @@ namespace ProvEditorNET.Mappers;
 public static class ProvinceMapper
 {
     
-    public static Province ToProvince(this ProvinceDto provinceDto, Country country, ICollection<Resource> resources)
+    public static Province ToProvince(this ProvinceDto provinceDto, Country country, ICollection<Resource> resources, ICollection<Infrastructure> infrastructure)
     {
         return new Province
         {
@@ -18,9 +18,10 @@ public static class ProvinceMapper
             Name = provinceDto.ProvinceName,
             Notes = provinceDto.Notes,
             Country = country,
+            Shape = provinceDto.Shape,
             Population = provinceDto.Population,
             Resources = resources.ToList(),
-            Infrastructures = provinceDto.Infrastructures.ToList()
+            Infrastructures = infrastructure.ToList()
         };
     }
 
@@ -32,18 +33,21 @@ public static class ProvinceMapper
             resourcesStr.Add( resource.Name );
         }
         
-        ICollection<string> infrastructursStr = new List<string>();
-        // TODO - call fetch infra list like with resources above
+        ICollection<string> infrastructuresStr = new List<string>();
+        foreach (var infrastructure in province.Infrastructures)
+        {
+            infrastructuresStr.Add( infrastructure.Name );
+        }
         
         return new ProvinceDto( 
-            Enum.GetName(province.ProvinceType),
+            province.ProvinceType,
             province.Name, 
             province.Country.Name, 
             province.Notes,
             province.Shape,
             province.Population,
             resourcesStr,
-            infrastructureStr
+            infrastructuresStr
             );
     }
 }
