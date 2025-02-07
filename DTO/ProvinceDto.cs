@@ -5,7 +5,7 @@ public record ProvinceDto(
     string ProvinceName,
     string CountryName,
     string Notes,
-    List<int> Shape,
+    List<float> Shape,
     int Population,
     IEnumerable<string> Resources,
     IEnumerable<string> Infrastructures

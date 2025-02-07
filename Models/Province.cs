@@ -32,7 +32,7 @@ public class Province : DbContext
     // Postgres DB needs extension on it's side: CREATE EXTENSION postgis;
     [Required]
     [Column("shape")]
-    public List<int> Shape { get; set; }
+    public List<float> Shape { get; set; }
     
     [Required]
     [Column("population")]
