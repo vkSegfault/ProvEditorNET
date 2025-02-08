@@ -15,5 +15,4 @@ DB migrations:
 Note that every Context we create should be applied one by one, to list Contexts:
 `dotnet ef dbcontext list`
 
-
 ---

@@ -102,6 +102,9 @@ public class ProvinceController: ControllerBase
         if (province != null)
         {
             var provinceDto = province.ToProvinceDto();
+            
+            // TODO - remove thread sleep - just used for testing frontend delays
+            Thread.Sleep(2000);
             return Ok(provinceDto);
         }
         else
