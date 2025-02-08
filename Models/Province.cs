@@ -10,6 +10,24 @@ public class Province : DbContext
     [Key]
     [Column("provinceId")]
     public Guid ProvinceId { get; set; }
+
+    [Required]
+    [Column("authoredBy")]
+    [MaxLength(30)]
+    public string AuthoredBy { get; set; }
+
+    [Required]
+    [Column("createdDate")]
+    public DateTime CreatedDate { get; set; }
+    
+    [Required]
+    [Column("modifiedBy")]
+    [MaxLength(30)]
+    public string ModifiedBy { get; set; }
+    
+    [Required]
+    [Column("modifiedDate")]
+    public DateTime ModifiedDate { get; set; }
     
     [Required]
     [Column("provinceType")]

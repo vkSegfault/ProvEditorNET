@@ -8,19 +8,24 @@ namespace ProvEditorNET.Services;
 public class ProvinceService : IProvinceService
 {
     private readonly ProvinceDbContext _context;
+    private readonly IIdentityService _identityService;
 
-    public ProvinceService(ProvinceDbContext context)
+    public ProvinceService(ProvinceDbContext context, IIdentityService identityService)
     {
         _context = context;
+        _identityService = identityService;
     }
 
     public async Task<(bool success, string msg)> CreateAsync(Province province)
     {
         Console.WriteLine("Called ProvinceService.CreateAsync");
-        foreach (var res in province.Resources)
-        {
-            Console.WriteLine( "Resource: " + res.Name);
-        }
+        // foreach (var res in province.Resources)
+        // {
+        //     Console.WriteLine( "Resource: " + res.Name);
+        // }
+
+        province.AuthoredBy = _identityService.GetLoggedInUsername();
+        province.ModifiedBy = _identityService.GetLoggedInUsername();
         
         try
         {

@@ -19,8 +19,16 @@ public class IdentityService : IIdentityService
     private readonly IEmailSender _emailSender;
     private readonly IConfiguration _configuration;
     private readonly IGoogleAuth _googleAuth;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public IdentityService(IdentityDbContext identityDbContext, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IEmailSender emailSender, IConfiguration configuration, IGoogleAuth googleAuth)
+    public IdentityService(
+        IdentityDbContext identityDbContext, 
+        UserManager<IdentityUser> userManager, 
+        RoleManager<IdentityRole> roleManager, 
+        IEmailSender emailSender, 
+        IConfiguration configuration, 
+        IGoogleAuth googleAuth,
+        IHttpContextAccessor httpContextAccessor)
     {
         _identityRepository = identityDbContext;
         _userManager = userManager;
@@ -28,6 +36,7 @@ public class IdentityService : IIdentityService
         _emailSender = emailSender;
         _configuration = configuration;
         _googleAuth = googleAuth;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<IEnumerable<IdentityUser>> GetAllUsers()
@@ -50,6 +59,11 @@ public class IdentityService : IIdentityService
         }
     }
 
+    public string GetLoggedInUsername()
+    {
+        return _httpContextAccessor.HttpContext?.User.Identity?.Name;
+    }
+    
     public async Task RegisterUserAsync(string email, string password)
     {
         // we cannot call /register endpoint directly because we set globally it needs password and for SSO we don't use password - we authenticate with idToken instead

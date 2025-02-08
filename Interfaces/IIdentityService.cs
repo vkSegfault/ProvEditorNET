@@ -8,6 +8,7 @@ public interface IIdentityService
 {
     Task<IEnumerable<IdentityUser>> GetAllUsers();
     Task<bool> UserExistsAsync(string email);
+    string GetLoggedInUsername();
     Task RegisterUserAsync(string email, string password);   // for SSO password should be empty
     Task<string> SendConfirmationEmailAsync(string email);
     Task<bool> VerifyEmailAsync(string email, string token);

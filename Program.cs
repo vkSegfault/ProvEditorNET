@@ -111,6 +111,7 @@ builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).
 // builder.Services.AddIdentityCore<User>().AddEntityFrameworkStores<IdentityDbContext>().AddApiEndpoints();
 
 builder.Services.AddAuthentication().AddBearerToken();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCors(options =>
 {

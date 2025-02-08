@@ -14,6 +14,10 @@ public static class ProvinceMapper
         {
             // TODO - change Guid.NewGuid() to Guid.CreateVersion7() once .NET 9 is released
             ProvinceId = Guid.NewGuid(),
+            AuthoredBy = String.Empty,
+            CreatedDate = DateTime.UtcNow,
+            ModifiedBy = String.Empty,
+            ModifiedDate = DateTime.UtcNow,
             ProvinceType = provinceDto.ProvinceType,
             Name = provinceDto.ProvinceName,
             Notes = provinceDto.Notes,
