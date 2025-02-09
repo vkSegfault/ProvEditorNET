@@ -54,4 +54,34 @@ public static class ProvinceMapper
             infrastructuresStr
             );
     }
+    
+    public static ProvinceResponseDto ToProvinceResponseDto(this Province province)
+    {
+        ICollection<string> resourcesStr = new List<string>();
+        foreach (var resource in province.Resources)
+        {
+            resourcesStr.Add( resource.Name );
+        }
+        
+        ICollection<string> infrastructuresStr = new List<string>();
+        foreach (var infrastructure in province.Infrastructures)
+        {
+            infrastructuresStr.Add( infrastructure.Name );
+        }
+        
+        return new ProvinceResponseDto( 
+            province.AuthoredBy,
+            province.CreatedDate,
+            province.ModifiedBy,
+            province.ModifiedDate,
+            province.ProvinceType,
+            province.Name, 
+            province.Country.Name, 
+            province.Notes,
+            province.Shape,
+            province.Population,
+            resourcesStr,
+            infrastructuresStr
+        );
+    }
 }

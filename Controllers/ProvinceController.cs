@@ -86,11 +86,11 @@ public class ProvinceController: ControllerBase
     public async Task<ActionResult<List<String>>> GetAllProvinces()
     {
         var provinces = await _provinceService.GetAllProvincesAsync();
-        var provincesDto = provinces.Select(p => p.ToProvinceRequestDto());
+        var provincesResponseDto = provinces.Select(p => p.ToProvinceResponseDto());
 
         // TODO - remove thread sleep - just used for testing frontend delays
         Thread.Sleep(2000);
-        return Ok(provincesDto);
+        return Ok(provincesResponseDto);
     }
     
     
@@ -101,11 +101,11 @@ public class ProvinceController: ControllerBase
         var province = await _provinceService.GetProvinceByNameAsync(name);
         if (province != null)
         {
-            var provinceDto = province.ToProvinceRequestDto();
+            var provinceResponseDto = province.ToProvinceResponseDto();
             
             // TODO - remove thread sleep - just used for testing frontend delays
             Thread.Sleep(2000);
-            return Ok(provinceDto);
+            return Ok(provinceResponseDto);
         }
         else
         {
