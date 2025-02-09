@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
@@ -19,10 +20,6 @@ public class ProvinceService : IProvinceService
     public async Task<(bool success, string msg)> CreateAsync(Province province)
     {
         Console.WriteLine("Called ProvinceService.CreateAsync");
-        // foreach (var res in province.Resources)
-        // {
-        //     Console.WriteLine( "Resource: " + res.Name);
-        // }
 
         province.AuthoredBy = _identityService.GetLoggedInUsername();
         province.ModifiedBy = _identityService.GetLoggedInUsername();

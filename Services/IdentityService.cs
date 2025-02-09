@@ -15,6 +15,7 @@ public class IdentityService : IIdentityService
 {
     private readonly IdentityDbContext _identityRepository;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly SignInManager<IdentityUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IEmailSender _emailSender;
     private readonly IConfiguration _configuration;
@@ -24,6 +25,7 @@ public class IdentityService : IIdentityService
     public IdentityService(
         IdentityDbContext identityDbContext, 
         UserManager<IdentityUser> userManager, 
+        SignInManager<IdentityUser> signInManager,
         RoleManager<IdentityRole> roleManager, 
         IEmailSender emailSender, 
         IConfiguration configuration, 
@@ -32,6 +34,7 @@ public class IdentityService : IIdentityService
     {
         _identityRepository = identityDbContext;
         _userManager = userManager;
+        _signInManager = signInManager;
         _roleManager = roleManager;
         _emailSender = emailSender;
         _configuration = configuration;
@@ -59,10 +62,64 @@ public class IdentityService : IIdentityService
         }
     }
 
-    public string GetLoggedInUsername()
+    public async Task<bool> SignInAsync(string email, ClaimsPrincipal principal)
     {
-        Console.WriteLine("Logged In user is: " + _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated);
-        return _httpContextAccessor.HttpContext?.User.Identity?.Name;
+        var user = await _identityRepository.Users.SingleOrDefaultAsync(u => u.Email == email);
+        if (await _signInManager.CanSignInAsync(user))
+        {
+            await _signInManager.SignInAsync(user, true);
+            if ( _signInManager.IsSignedIn(principal) )
+            {
+                Console.WriteLine($"User {user.Email} logged in");
+                return true;
+            }
+
+            return false;
+        }
+        else
+        {
+            Console.WriteLine("Can't sign in user: " + email);
+            return false;
+        }
+    }
+    
+    public string GetLoggedInUsername(ClaimsPrincipal principalOptional = null)
+    {
+        // check the .NET Identity build-in service if user is logged in
+        if (_httpContextAccessor.HttpContext?.User.Identity?.Name is not null)
+        {
+            Console.WriteLine("User is in HTTP context - we can retrieve who is currently signed in");
+            // Console.WriteLine("Logged In user is: " + _httpContextAccessor.HttpContext?.User.Identity?.Name);
+            // Console.WriteLine("Logged in 2: " + _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            return _httpContextAccessor.HttpContext?.User.Identity?.Name;
+        }
+        // if above is null then we use external Login jak Google SSO - we do it differently
+        else
+        {
+            Console.WriteLine("User is not in HTTP Context - using other way to check who is currently signed in");
+            ClaimsPrincipal principal = _httpContextAccessor.HttpContext?.User;
+            if (principal is not null)
+            {
+                Console.WriteLine("Principal is not NULL");
+                Console.WriteLine("Claims are not NULL");
+                Claim claim = principal.Claims.FirstOrDefault();
+                Console.WriteLine("First or default Claim: " + claim?.Value);
+                return claim?.Value;
+            }
+            else
+            {
+                Console.WriteLine( "Principal is NULL" );
+                return null;
+            }
+            return null;
+        }
+        
+    }
+
+    public async Task<ExternalLoginInfo> GetExternalLoginInfoAsync()
+    {
+        ExternalLoginInfo loginInfo = await _signInManager.GetExternalLoginInfoAsync();
+        return loginInfo;
     }
     
     public async Task RegisterUserAsync(string email, string password)

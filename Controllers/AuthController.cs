@@ -69,6 +69,8 @@ public class AuthController : ControllerBase
                         return Unauthorized("User exists but administrator didn't approve him/her");
                     }
                     Console.WriteLine($"Bearer access token: {claimsPrincipal}");
+                    // await _identityService.SignInAsync( payload.Email, claimsPrincipal );   // manually SignIn user because External Google SSO is not managed by COre Identity service
+                    Console.WriteLine("User logged in CONTROLLER BASE: " + User.Claims.FirstOrDefault());   // this lines returns ID of logged by Google SSO user
                     return SignIn(claimsPrincipal);
                 }
                 else
