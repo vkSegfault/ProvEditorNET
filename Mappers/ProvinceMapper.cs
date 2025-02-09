@@ -8,7 +8,7 @@ namespace ProvEditorNET.Mappers;
 public static class ProvinceMapper
 {
     
-    public static Province ToProvince(this ProvinceDto provinceDto, Country country, ICollection<Resource> resources, ICollection<Infrastructure> infrastructure)
+    public static Province ToProvince(this ProvinceRequestDto provinceRequestDto, Country country, ICollection<Resource> resources, ICollection<Infrastructure> infrastructure)
     {
         return new Province
         {
@@ -18,18 +18,18 @@ public static class ProvinceMapper
             CreatedDate = DateTime.UtcNow,
             ModifiedBy = String.Empty,
             ModifiedDate = DateTime.UtcNow,
-            ProvinceType = provinceDto.ProvinceType,
-            Name = provinceDto.ProvinceName,
-            Notes = provinceDto.Notes,
+            ProvinceType = provinceRequestDto.ProvinceType,
+            Name = provinceRequestDto.ProvinceName,
+            Notes = provinceRequestDto.Notes,
             Country = country,
-            Shape = provinceDto.Shape,
-            Population = provinceDto.Population,
+            Shape = provinceRequestDto.Shape,
+            Population = provinceRequestDto.Population,
             Resources = resources.ToList(),
             Infrastructures = infrastructure.ToList()
         };
     }
 
-    public static ProvinceDto ToProvinceDto(this Province province)
+    public static ProvinceRequestDto ToProvinceRequestDto(this Province province)
     {
         ICollection<string> resourcesStr = new List<string>();
         foreach (var resource in province.Resources)
@@ -43,7 +43,7 @@ public static class ProvinceMapper
             infrastructuresStr.Add( infrastructure.Name );
         }
         
-        return new ProvinceDto( 
+        return new ProvinceRequestDto( 
             province.ProvinceType,
             province.Name, 
             province.Country.Name, 

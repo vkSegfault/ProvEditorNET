@@ -38,9 +38,9 @@ public class ProvinceController: ControllerBase
     
     
     [HttpPost]
-    public async Task<ActionResult<Province>> CreateProvince([FromBody] ProvinceDto provinceDto)
+    public async Task<ActionResult<Province>> CreateProvince([FromBody] ProvinceRequestDto provinceRequestDto)
     {
-        Country country = await _countryService.GetCountryByNameAsync(provinceDto.CountryName);
+        Country country = await _countryService.GetCountryByNameAsync(provinceRequestDto.CountryName);
         if (country is null)
         {
             return NotFound("Country not found");
@@ -49,7 +49,7 @@ public class ProvinceController: ControllerBase
         ICollection<Resource> resources;
         try
         {
-            resources = await _resourceService.GetResourcesFromStringListAsync( provinceDto.Resources );
+            resources = await _resourceService.GetResourcesFromStringListAsync( provinceRequestDto.Resources );
         }
         catch (Exception e)
         {
@@ -59,14 +59,14 @@ public class ProvinceController: ControllerBase
         ICollection<Infrastructure> infrastructures;
         try
         {
-            infrastructures = await _infrastructureService.GetInfrastructuresFromStringListAsync( provinceDto.Infrastructures );
+            infrastructures = await _infrastructureService.GetInfrastructuresFromStringListAsync( provinceRequestDto.Infrastructures );
         }
         catch (Exception e)
         {
             return BadRequest("Infrastructure not found: " + e.Message);
         }
         
-        var province = provinceDto.ToProvince(country, resources, infrastructures);
+        var province = provinceRequestDto.ToProvince(country, resources, infrastructures);
         
         (bool success, string msg) created = await _provinceService.CreateAsync(province);
 
@@ -86,7 +86,7 @@ public class ProvinceController: ControllerBase
     public async Task<ActionResult<List<String>>> GetAllProvinces()
     {
         var provinces = await _provinceService.GetAllProvincesAsync();
-        var provincesDto = provinces.Select(p => p.ToProvinceDto());
+        var provincesDto = provinces.Select(p => p.ToProvinceRequestDto());
 
         // TODO - remove thread sleep - just used for testing frontend delays
         Thread.Sleep(2000);
@@ -101,7 +101,7 @@ public class ProvinceController: ControllerBase
         var province = await _provinceService.GetProvinceByNameAsync(name);
         if (province != null)
         {
-            var provinceDto = province.ToProvinceDto();
+            var provinceDto = province.ToProvinceRequestDto();
             
             // TODO - remove thread sleep - just used for testing frontend delays
             Thread.Sleep(2000);

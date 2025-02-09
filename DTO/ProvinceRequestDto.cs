@@ -1,6 +1,6 @@
 namespace ProvEditorNET.DTO;
 
-public record ProvinceDto(
+public record ProvinceRequestDto(
     string ProvinceType,
     string ProvinceName,
     string CountryName,

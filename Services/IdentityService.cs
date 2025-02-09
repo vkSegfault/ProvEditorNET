@@ -61,6 +61,7 @@ public class IdentityService : IIdentityService
 
     public string GetLoggedInUsername()
     {
+        Console.WriteLine("Logged In user is: " + _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated);
         return _httpContextAccessor.HttpContext?.User.Identity?.Name;
     }
     
@@ -133,7 +134,7 @@ public class IdentityService : IIdentityService
         if (mailConfirmed == true)
         {
             List<Claim> allClaims = await GetUserClaims(email);
-            allClaims.Append( new Claim(ClaimTypes.Email, email) );
+            allClaims.Add( new Claim(ClaimTypes.Email, email) );
             
             ClaimsIdentity claimsIdentity = new ClaimsIdentity( allClaims, BearerTokenDefaults.AuthenticationScheme );
             
