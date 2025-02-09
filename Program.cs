@@ -92,7 +92,7 @@ builder.Services
 builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).Configure(
     options =>
     {
-        options.BearerTokenExpiration = TimeSpan.FromMinutes(5);
+        options.BearerTokenExpiration = TimeSpan.FromMinutes(20);
     }
     );
 
