@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using ProvEditorNET.Extensions;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
 using ProvEditorNET.Repository;
@@ -152,10 +153,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("AllowAllOrigin");
-    
-    // below will only work from controllers: https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/
-    // using var provinceDbContext = app.Services.GetRequiredService<ProvinceDbContext>();
-    // provinceDbContext.Database.Migrate();   // Never do this in Production (https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime)
+    app.ApplyMigrations();   // Never do this in Production (https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime)
 }
 else
 {
