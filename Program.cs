@@ -53,6 +53,11 @@ builder.Services.AddDbContext<ProvinceDbContext>(options =>
     options.UseNpgsql( connectionString );
 });
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisLocalConnection");
+});
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.SignIn.RequireConfirmedEmail = true;

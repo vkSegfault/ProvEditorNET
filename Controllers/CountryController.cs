@@ -1,6 +1,8 @@
 using System.Diagnostics.Metrics;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using ProvEditorNET.DTO;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Mappers;
@@ -15,11 +17,13 @@ public class CountryController : ControllerBase
 {
     private readonly ICountryService _countryService;
     private readonly IMeterFactory _meterFactory;
+    private readonly IDistributedCache _cache;
 
-    public CountryController(ICountryService countryService, IMeterFactory meterFactory)
+    public CountryController(ICountryService countryService, IMeterFactory meterFactory, IDistributedCache cache)
     {
         _countryService = countryService;
         _meterFactory = meterFactory;
+        _cache = cache;
     }
     
     [HttpPost]
@@ -41,6 +45,10 @@ public class CountryController : ControllerBase
     {
         var countryList = await _countryService.GetAllCountriesAsync();
         var countryDtoList = countryList.Select(i => i.ToCountryDto());
+        
+        // TODO
+        // instead caching EF Core Models we should cache DTOs
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(countryDtoList);
         
         // don't return List<> here (which is lazy-evaluated) cause we will get strange error about missing DbContext - misleading as fcuk
         // just return IEnumerable

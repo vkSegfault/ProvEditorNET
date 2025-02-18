@@ -49,6 +49,9 @@ public class ProvinceDbContext : DbContext
         modelBuilder.Entity<Province>()
             .HasMany(p => p.Infrastructures)
             .WithMany(i => i.Provinces);
+        
+        // make Country serializable
+        // modelBuilder.Entity<Country>().Property(p => p.CountryId)
     }
 
     // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
