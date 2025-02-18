@@ -43,7 +43,7 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 string connectionString = builder.Configuration.GetConnectionString("DockerConnection");
 #endif
 
-builder.Services.AddDbContext<IdentityDbContext>(options =>
+var serviceCollection = builder.Services.AddDbContext<IdentityDbContext>(options =>
 {
     options.UseNpgsql( connectionString );
 });
@@ -152,7 +152,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("AllowAllOrigin");
-    // app.ApplyMigrations();   // TODO - what package ?
+    
+    // below will only work from controllers: https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/
+    // using var provinceDbContext = app.Services.GetRequiredService<ProvinceDbContext>();
+    // provinceDbContext.Database.Migrate();   // Never do this in Production (https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime)
 }
 else
 {
