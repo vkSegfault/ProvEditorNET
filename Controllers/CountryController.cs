@@ -1,8 +1,6 @@
 using System.Diagnostics.Metrics;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using ProvEditorNET.DTO;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Mappers;
@@ -17,13 +15,13 @@ public class CountryController : ControllerBase
 {
     private readonly ICountryService _countryService;
     private readonly IMeterFactory _meterFactory;
-    private readonly IDistributedCache _cache;
+    private readonly IRedisService _redisService;
 
-    public CountryController(ICountryService countryService, IMeterFactory meterFactory, IDistributedCache cache)
+    public CountryController(ICountryService countryService, IMeterFactory meterFactory, IRedisService redisService)
     {
         _countryService = countryService;
         _meterFactory = meterFactory;
-        _cache = cache;
+        _redisService = redisService;
     }
     
     [HttpPost]
@@ -31,11 +29,15 @@ public class CountryController : ControllerBase
     {
         var country = countryDto.ToCountry();
         await _countryService.CreateAsync(country);
-        
+
+        // Instrumentation for Prometheus/Grafana
         var meter = _meterFactory.Create("CountryAddedMeter");
         var instrument = meter.CreateCounter<int>("country_added_counter");
         instrument.Add(1);   // add 1 to this meter everytime we add Country
 
+        // Cache invalidation
+        await _redisService.InvalidateCacheAsync("country_all");
+        
         return Ok();
     }
     
@@ -43,16 +45,29 @@ public class CountryController : ControllerBase
     [Route("all")]
     public async Task<IActionResult> GetAllCountries()
     {
-        var countryList = await _countryService.GetAllCountriesAsync();
-        var countryDtoList = countryList.Select(i => i.ToCountryDto());
+        string redisKey = "country_all";
         
-        // TODO
-        // instead caching EF Core Models we should cache DTOs
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(countryDtoList);
+        // first check for cached entries Cached
+        // await _redisService.GetSetAsync( "country_all", countryDtoList );
+        var countryDtoList = await _redisService.GetAsync<IEnumerable<CountryDto>>(redisKey);
+        if (countryDtoList is not null)
+        {
+            return Ok(countryDtoList);
+        }
+        else
+        {
+            // if not cached then fetch from DB...
+            var countryList = await _countryService.GetAllCountriesAsync();
+            countryDtoList = countryList.Select(i => i.ToCountryDto());
+            
+            // ...and then cache it
+            await _redisService.SetAsync(redisKey, countryDtoList);
+            
+            return Ok(countryDtoList);
+        }
         
         // don't return List<> here (which is lazy-evaluated) cause we will get strange error about missing DbContext - misleading as fcuk
         // just return IEnumerable
-        return Ok(countryDtoList);
     }
 
     [HttpGet]
@@ -69,6 +84,10 @@ public class CountryController : ControllerBase
     public async Task<IActionResult> DeleteCountry(string countryName)
     {
         var deleted = await _countryService.DeleteCountryAsync(countryName);
+        
+        // Cache invalidation
+        await _redisService.InvalidateCacheAsync("country_all");
+        
         if (deleted)
         {
             return Ok("Country deleted: " + countryName);

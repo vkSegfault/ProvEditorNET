@@ -2,8 +2,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
 using ProvEditorNET.Repository;
@@ -13,19 +11,16 @@ namespace ProvEditorNET.Services;
 public class CountryService : ICountryService
 {
     private readonly ProvinceDbContext _context;
-    private readonly IDistributedCache _cache;
 
-    public CountryService(ProvinceDbContext context, IDistributedCache cache)
+    public CountryService(ProvinceDbContext context)
     {
         _context = context;
-        _cache = cache;
     }
 
     public async Task CreateAsync(Country country)
     {
         await _context.Countries.AddAsync(country);
         await _context.SaveChangesAsync();
-        await _cache.RemoveAsync("dupa");   // invalidate cache every time we change data
     }
 
     public async Task<IEnumerable<Country>> GetAllCountriesAsync()
@@ -50,26 +45,26 @@ public class CountryService : ICountryService
 
         // await _cache.GetStringAsync( "dupa", cancellationToken );
         
-        string key = "countries";
-        byte[] countriesBytes = await _cache.GetAsync(key);
-        if( countriesBytes is not null )
-        {
-            Console.WriteLine("Countries found in Redis cache ");
-            List<Country> countries = JsonSerializer.Deserialize<List<Country>>(countriesBytes);
-            return countries;
-        }
-        else
-        {
-            Console.WriteLine("No countries in Redis cache - using DB and creating new cache entry");
-            IEnumerable<Country> countries = await _context.Countries.ToListAsync();
-
-            // var bytes = JsonSerializer.SerializeToUtf8Bytes(countries);
-            // JsonSerializer.Serialize<List<Country>>(countries);  // modelBuilder.Entity<Order>() .Property(e => e.Price) .HasConversion( v => JsonSerializer.Serialize(v), v => JsonSerializer.Deserialize<Money>(v)); 
-            // byte[] countriesBytes2 = Encoding.UTF8.GetBytes( JsonSerializer.Serialize( countries ) );
-            // await _cache.SetAsync(key, countriesBytes2);
-            
-            return countries;
-        }
+        // string key = "countries";
+        // byte[] countriesBytes = await _cache.GetAsync(key);
+        // if( countriesBytes is not null )
+        // {
+        //     Console.WriteLine("Countries found in Redis cache ");
+        //     List<Country> countries = JsonSerializer.Deserialize<List<Country>>(countriesBytes);
+        //     return countries;
+        // }
+        // else
+        // {
+        //     Console.WriteLine("No countries in Redis cache - using DB and creating new cache entry");
+        //     IEnumerable<Country> countries = await _context.Countries.ToListAsync();
+        //
+        //     // var bytes = JsonSerializer.SerializeToUtf8Bytes(countries);
+        //     // JsonSerializer.Serialize<List<Country>>(countries);  // modelBuilder.Entity<Order>() .Property(e => e.Price) .HasConversion( v => JsonSerializer.Serialize(v), v => JsonSerializer.Deserialize<Money>(v)); 
+        //     // byte[] countriesBytes2 = Encoding.UTF8.GetBytes( JsonSerializer.Serialize( countries ) );
+        //     // await _cache.SetAsync(key, countriesBytes2);
+        //     
+        //     return countries;
+        // }
         
         // byte[] valueBytes = Encoding.UTF8.GetBytes("mamuta");
         // // byte[] valueBytesCountries = 
@@ -95,9 +90,9 @@ public class CountryService : ICountryService
         //     Console.WriteLine( $"Redis key '{key}' has value '{value}' and value '{value2}'" );
         // }
         
-        // var countries = await _context.Countries.ToListAsync();
-        //
-        // return countries;
+        var countries = await _context.Countries.ToListAsync();
+        
+        return countries;
     }
 
     public async Task<Country> GetCountryByNameAsync(string countryName)
