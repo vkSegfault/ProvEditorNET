@@ -11,6 +11,7 @@ using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
 using ProvEditorNET.Repository;
 using ProvEditorNET.Services;
+using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IGoogleAuth, GoogleAuth>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
+builder.Services.AddScoped<IRedisService, RedisService>();
 builder.Services.AddScoped<IProvinceService, ProvinceService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IResourceService, ResourceService>();
@@ -56,6 +58,11 @@ builder.Services.AddDbContext<ProvinceDbContext>(options =>
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("RedisLocalConnection");
+    options.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions()
+    {
+        AbortOnConnectFail = true, // terminate app if can't connect to Redis instance
+        EndPoints = { options.Configuration }  // ensure endpoint is set correctly
+    };
 });
 
 builder.Services.Configure<IdentityOptions>(options =>
