@@ -29,6 +29,15 @@
       - ops
       - backend
 
+  # use "redis:6379" ass connection string to redis
+  redis-insight:
+    image: redis/redisinsight:2.66
+    container_name: redis-insight
+    ports:
+      - "5540:5540"
+    networks:
+      - ops
+
 #  proveditor:
 #    build: .
 #    container_name: proveditor

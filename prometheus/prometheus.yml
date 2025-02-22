@@ -52,3 +52,8 @@ scrape_configs:
     static_configs:
       - targets:
           - cadvisor:8080
+            
+  - job_name: redis_insight
+    static_configs:
+      - targets:
+          - redis-insight:5540/api/health/
