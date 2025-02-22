@@ -74,9 +74,23 @@ public class CountryController : ControllerBase
     [Route("{name}")]
     public async Task<IActionResult> GetCountryByName(string name)
     {
-        var country = await _countryService.GetCountryByNameAsync(name);
-        var countryDto = country.ToCountryDto();
-        return Ok(countryDto);
+        string redisKey = $"country:{name}";
+        var countryDto = await _redisService.GetAsync<CountryDto>(redisKey);
+        
+        if (countryDto is not null)
+        {
+            return Ok(countryDto);
+        }
+        else
+        {
+            var country = await _countryService.GetCountryByNameAsync(name);
+            countryDto = country.ToCountryDto();
+            
+            await _redisService.SetAsync(redisKey, countryDto);
+            
+            return Ok(countryDto);
+        }
+        
     }
     
     
