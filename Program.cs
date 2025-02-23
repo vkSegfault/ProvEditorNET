@@ -164,7 +164,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(options =>
     {
         options.Title = "Prov Editor API";
-        options.WithTheme(ScalarTheme.BluePlanet);
+        options.WithTheme(ScalarTheme.Mars);
         options.DefaultHttpClient = new(ScalarTarget.Shell, ScalarClient.HttpClient);
         // options.WithPreferredScheme("Bearer")
         // options.WithHttpBearerAuthentication(bearer => { bearer.Token = "YOUR_BEARER_TOKEN"; });
