@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -116,14 +117,17 @@ builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme).
 // alternative when using our custom defined IdentityUser
 // builder.Services.AddAuthentication(options =>
 //     {
-//         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//         options.DefaultChallengeScheme = BearerTokenDefaults.AuthenticationScheme;
+//         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 //     })
-//     .AddCookie(IdentityConstants.ApplicationScheme)
-//     .AddBearerToken(IdentityConstants.BearerScheme);
+//     // .AddCookie(IdentityConstants.ApplicationScheme)
+//     // .AddBearerToken(IdentityConstants.BearerScheme);
+//     // .AddJwtBearer();
+//     .AddBearerToken( JwtBearerDefaults.AuthenticationScheme );
 // builder.Services.AddIdentityCore<User>().AddEntityFrameworkStores<IdentityDbContext>().AddApiEndpoints();
 
-builder.Services.AddAuthentication().AddBearerToken();
+// builder.Services.AddAuthentication().AddBearerToken();
+builder.Services.AddAuthentication().AddBearerToken( JwtBearerDefaults.AuthenticationScheme );
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddCors(options =>
