@@ -11,13 +11,13 @@ namespace ProvEditorNET.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize(Roles = "Admin,User")]   // Admin OR User - not necessarily both
-public class CountryController : ControllerBase
+public class CountriesController : ControllerBase
 {
     private readonly ICountryService _countryService;
     private readonly IMeterFactory _meterFactory;
     private readonly IRedisService _redisService;
 
-    public CountryController(ICountryService countryService, IMeterFactory meterFactory, IRedisService redisService)
+    public CountriesController(ICountryService countryService, IMeterFactory meterFactory, IRedisService redisService)
     {
         _countryService = countryService;
         _meterFactory = meterFactory;
@@ -42,7 +42,7 @@ public class CountryController : ControllerBase
     }
     
     [HttpGet]
-    [Route("all")]
+    // [Route("all")]
     public async Task<IActionResult> GetAllCountries()
     {
         string redisKey = "country_all";

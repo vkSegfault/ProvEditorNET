@@ -11,14 +11,14 @@ namespace ProvEditorNET.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class ProvinceController: ControllerBase
+public class ProvincesController: ControllerBase
 {
     private readonly IProvinceService _provinceService;
     private readonly ICountryService _countryService;
     private readonly IResourceService _resourceService;
     private readonly IInfrastructureService _infrastructureService;
 
-    public ProvinceController(IProvinceService provinceService, ICountryService countryService, IResourceService resourceService, IInfrastructureService infrastructureService)
+    public ProvincesController(IProvinceService provinceService, ICountryService countryService, IResourceService resourceService, IInfrastructureService infrastructureService)
     {
         _provinceService = provinceService;
         _countryService = countryService;
@@ -81,8 +81,8 @@ public class ProvinceController: ControllerBase
     }
     
     
-    [HttpGet]   // adding [HttpGet(Name = "GetProvinces")] will fail on Swagger creation
-    [Route("all")]
+    [HttpGet]
+    // [Route("all")]
     public async Task<ActionResult<List<String>>> GetAllProvinces()
     {
         var provinces = await _provinceService.GetAllProvincesAsync();

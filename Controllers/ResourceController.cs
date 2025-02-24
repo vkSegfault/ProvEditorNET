@@ -10,11 +10,11 @@ namespace ProvEditorNET.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize(Roles = "Admin,User")]   // Admin OR User - not necessarily both
-public class ResourceController : ControllerBase
+public class ResourcesController : ControllerBase
 {
     private readonly IResourceService _resourceService;
 
-    public ResourceController(IResourceService resourceService)
+    public ResourcesController(IResourceService resourceService)
     {
         _resourceService = resourceService;
     }
@@ -29,7 +29,7 @@ public class ResourceController : ControllerBase
     }
     
     [HttpGet]
-    [Route("all")]
+    // [Route("all")]
     public async Task<IActionResult> GetAllResources()
     {
         var resourceList = await _resourceService.GetAllResourcesAsync();

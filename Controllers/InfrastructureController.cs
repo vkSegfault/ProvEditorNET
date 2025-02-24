@@ -11,12 +11,12 @@ namespace ProvEditorNET.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize(Roles = "Admin,User")]   // Admin OR User - not necessarily both
-public class InfrastructureController : ControllerBase
+public class InfrastructuresController : ControllerBase
 {
     private readonly IInfrastructureService _infrastructureService;
     private readonly IMeterFactory _meterFactory;
 
-    public InfrastructureController(IInfrastructureService infrastructureService, IMeterFactory meterFactory)
+    public InfrastructuresController(IInfrastructureService infrastructureService, IMeterFactory meterFactory)
     {
         _infrastructureService = infrastructureService;
         _meterFactory = meterFactory;
@@ -36,7 +36,7 @@ public class InfrastructureController : ControllerBase
     }
     
     [HttpGet]
-    [Route("all")]
+    // [Route("all")]
     public async Task<IActionResult> GetAllInfrastructures()
     {
         var infraList = await _infrastructureService.GetAllInfrastrcturesAsync();
