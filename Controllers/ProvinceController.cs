@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using ProvEditorNET.DTO;
+using ProvEditorNET.Helpers;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Mappers;
 using ProvEditorNET.Models;
@@ -9,7 +10,7 @@ using ProvEditorNET.Models;
 namespace ProvEditorNET.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route($"{ApiEndpoints.ApiBase}/[controller]")]
 [Authorize]
 public class ProvincesController: ControllerBase
 {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProvEditorNET.DTO;
+using ProvEditorNET.Helpers;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Mappers;
 using ProvEditorNET.Models;
@@ -8,7 +9,7 @@ using ProvEditorNET.Models;
 namespace ProvEditorNET.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route($"{ApiEndpoints.ApiBase}/[controller]")]
 [Authorize(Roles = "Admin,User")]   // Admin OR User - not necessarily both
 public class ResourcesController : ControllerBase
 {
