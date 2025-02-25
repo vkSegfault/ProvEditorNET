@@ -16,11 +16,13 @@ public class InfrastructuresController : ControllerBase
 {
     private readonly IInfrastructureService _infrastructureService;
     private readonly IMeterFactory _meterFactory;
+    private readonly IRedisService _redisService;
 
-    public InfrastructuresController(IInfrastructureService infrastructureService, IMeterFactory meterFactory)
+    public InfrastructuresController(IInfrastructureService infrastructureService, IMeterFactory meterFactory, IRedisService redisService)
     {
         _infrastructureService = infrastructureService;
         _meterFactory = meterFactory;
+        _redisService = redisService;
     }
     
     [HttpPost]
@@ -57,6 +59,32 @@ public class InfrastructuresController : ControllerBase
         return Ok(infraDto);
     }
     
+    [HttpPut]
+    [Route("{name}")]
+    public async Task<IActionResult> UpdateInfrastructure([FromRoute] string name, [FromBody] InfrastructureDto infrastructureDto)
+    {
+        var infrastructure = await _infrastructureService.GetInfrastructureByNameAsync(name);
+
+        if (infrastructure is not null)
+        {
+            infrastructure.Name = infrastructureDto.InfrastructureName;
+            infrastructure.Factor = infrastructureDto.Factor;
+            infrastructure.Price = infrastructureDto.BuildPrice;
+            infrastructure.MothlyCost = infrastructureDto.MonthlyCost;
+            infrastructure.Technology = infrastructureDto.TechnologyLevelRequired;
+            infrastructure.Notes = infrastructureDto.Notes;
+            await _infrastructureService.SaveChangesAsync();
+            
+            await _redisService.InvalidateCacheAsync("infrastructure_all");
+            await _redisService.InvalidateCacheAsync( $"infrastructure:{name}" );
+            
+            return Ok($"Infrastructure {name} updated");
+        }
+        else
+        {
+            return NotFound("Infrastructure not found");
+        }
+    }
     
     [HttpDelete("name:string")]
     public async Task<IActionResult> DeleteInfrastructure(string infrastructureName)
