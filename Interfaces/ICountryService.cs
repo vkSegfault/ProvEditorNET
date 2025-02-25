@@ -8,4 +8,5 @@ public interface ICountryService
     Task<IEnumerable<Country>> GetAllCountriesAsync();
     Task<Country> GetCountryByNameAsync(string countryName);
     Task<bool> DeleteCountryAsync(string countryName);
+    Task SaveChangesAsync();
 }

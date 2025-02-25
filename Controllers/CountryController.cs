@@ -93,7 +93,29 @@ public class CountriesController : ControllerBase
         }
         
     }
-    
+
+    [HttpPut]
+    [Route("{name}")]
+    public async Task<IActionResult> UpdateCountry([FromRoute] string name, [FromBody] CountryDto countryDto)
+    {
+        var country = await _countryService.GetCountryByNameAsync(name);
+
+        if (country is not null)
+        {
+            country.Name = countryDto.CountryName;
+            country.Notes = countryDto.Notes;
+            await _countryService.SaveChangesAsync();
+            
+            await _redisService.InvalidateCacheAsync("country_all");
+            await _redisService.InvalidateCacheAsync( $"country:{name}" );
+            
+            return Ok($"Country {name} updated");
+        }
+        else
+        {
+            return NotFound("Country not found");
+        }
+    }
     
     [HttpDelete("name:string")]
     public async Task<IActionResult> DeleteCountry(string countryName)
