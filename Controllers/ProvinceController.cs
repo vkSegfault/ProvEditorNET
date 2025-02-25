@@ -72,7 +72,7 @@ public class ProvincesController: ControllerBase
 
         if ( created.success )
         {
-            return Ok("Province created: " + province.Name);
+            return Created( $"api/v1/provinces/{provinceRequestDto.ProvinceName}", provinceRequestDto);
         }
         else
         {

@@ -25,7 +25,7 @@ public class ResourcesController : ControllerBase
         var resource = resourceDto.ToResource();
         await _resourceService.CreateAsync(resource);
 
-        return Ok();
+        return Created( $"api/v1/resources/{resourceDto.ResourceName}", resourceDto);
     }
     
     [HttpGet]

@@ -32,7 +32,7 @@ public class InfrastructuresController : ControllerBase
         var instrument = meter.CreateCounter<int>("country_added_counter");
         instrument.Add(1);   // add 1 to this meter everytime we add Country
 
-        return Ok();
+        return Created( $"api/v1/infrastrctures/{infrastructureDto.InfrastructureName}", infrastructureDto);
     }
     
     [HttpGet]

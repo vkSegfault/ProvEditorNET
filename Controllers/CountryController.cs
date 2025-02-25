@@ -38,7 +38,7 @@ public class CountriesController : ControllerBase
         // Cache invalidation
         await _redisService.InvalidateCacheAsync("country_all");
         
-        return Ok();
+        return Created( $"api/v1/countries/{countryDto.CountryName}", countryDto);
     }
     
     [HttpGet]
