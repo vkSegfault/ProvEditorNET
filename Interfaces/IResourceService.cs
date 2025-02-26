@@ -9,4 +9,5 @@ public interface IResourceService
     Task<Resource> GetResourceByNameAsync(string resourceName);
     Task<ICollection<Resource>> GetResourcesFromStringListAsync(IEnumerable<string> resourceNames);
     Task<bool> DeleteResourceAsync(string resourceName);
+    Task SaveChangesAsync();
 }

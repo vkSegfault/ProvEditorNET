@@ -62,4 +62,9 @@ public class ResourceService : IResourceService
         
         return false;
     }
+    
+    public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
 }
