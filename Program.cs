@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -16,7 +17,7 @@ using ProvEditorNET.Services;
 using Scalar.AspNetCore;
 using StackExchange.Redis;
 using ProvEditorNET.Helpers;
-
+using ProvEditorNET.Validators;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IProvinceService, ProvinceService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IResourceService, ResourceService>();
 builder.Services.AddScoped<IInfrastructureService, InfrastructureService>();
+builder.Services.AddScoped<IValidator<Province>, ProvinceValidator>();
 
 // builder.Services.AddEndpointsApiExplorer();
 

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProvEditorNET.Interfaces;
@@ -10,11 +11,13 @@ public class ProvinceService : IProvinceService
 {
     private readonly ProvinceDbContext _context;
     private readonly IIdentityService _identityService;
+    private readonly IValidator<Province> _provinceValidator;
 
-    public ProvinceService(ProvinceDbContext context, IIdentityService identityService)
+    public ProvinceService(ProvinceDbContext context, IIdentityService identityService, IValidator<Province> provinceValidator)
     {
         _context = context;
         _identityService = identityService;
+        _provinceValidator = provinceValidator;
     }
 
     public async Task<(bool success, string msg)> CreateAsync(Province province)
@@ -26,6 +29,7 @@ public class ProvinceService : IProvinceService
         
         try
         {
+            await _provinceValidator.ValidateAndThrowAsync(province);   // should go to UPDATE function as well
             await _context.Provinces.AddAsync(province);
             await _context.SaveChangesAsync();
         }
@@ -36,6 +40,11 @@ public class ProvinceService : IProvinceService
                 var message = e.GetBaseException().Message;
                 Console.WriteLine("==> Exception saving Province: " + message);
                 return (false, message);
+            }
+            else
+            {
+                Console.WriteLine("==> Exception saving Province: " + e.Message);
+                return (false, e.Message);
             }
         }
         return (true, "success");
