@@ -26,10 +26,10 @@ public class CountriesController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<Country>> CreateCountry([FromBody] CountryDto countryDto)
+    public async Task<ActionResult<Country>> CreateCountry([FromBody] CountryDto countryDto, CancellationToken cancellationToken)
     {
         var country = countryDto.ToCountry();
-        await _countryService.CreateAsync(country);
+        await _countryService.CreateAsync(country, cancellationToken);
 
         // Instrumentation for Prometheus/Grafana
         var meter = _meterFactory.Create("CountryAddedMeter");
@@ -44,7 +44,7 @@ public class CountriesController : ControllerBase
     
     [HttpGet]
     // [Route("all")]
-    public async Task<IActionResult> GetAllCountries()
+    public async Task<IActionResult> GetAllCountries(CancellationToken cancellationToken)
     {
         string redisKey = "country_all";
         
@@ -58,7 +58,7 @@ public class CountriesController : ControllerBase
         else
         {
             // if not cached then fetch from DB...
-            var countryList = await _countryService.GetAllCountriesAsync();
+            var countryList = await _countryService.GetAllCountriesAsync(cancellationToken);
             countryDtoList = countryList.Select(i => i.ToCountryDto());
             
             // ...and then cache it
@@ -73,7 +73,7 @@ public class CountriesController : ControllerBase
 
     [HttpGet]
     [Route("{name}")]
-    public async Task<IActionResult> GetCountryByName(string name)
+    public async Task<IActionResult> GetCountryByName(string name, CancellationToken cancellationToken)
     {
         string redisKey = $"country:{name}";
         var countryDto = await _redisService.GetAsync<CountryDto>(redisKey);
@@ -84,7 +84,7 @@ public class CountriesController : ControllerBase
         }
         else
         {
-            var country = await _countryService.GetCountryByNameAsync(name);
+            var country = await _countryService.GetCountryByNameAsync(name, cancellationToken);
             countryDto = country.ToCountryDto();
             
             await _redisService.SetAsync(redisKey, countryDto);
@@ -96,15 +96,15 @@ public class CountriesController : ControllerBase
 
     [HttpPut]
     [Route("{name}")]
-    public async Task<IActionResult> UpdateCountry([FromRoute] string name, [FromBody] CountryDto countryDto)
+    public async Task<IActionResult> UpdateCountry([FromRoute] string name, [FromBody] CountryDto countryDto, CancellationToken cancellationToken)
     {
-        var country = await _countryService.GetCountryByNameAsync(name);
+        var country = await _countryService.GetCountryByNameAsync(name, cancellationToken);
 
         if (country is not null)
         {
             country.Name = countryDto.CountryName;
             country.Notes = countryDto.Notes;
-            await _countryService.SaveChangesAsync();
+            await _countryService.SaveChangesAsync(cancellationToken);
             
             await _redisService.InvalidateCacheAsync("country_all");
             await _redisService.InvalidateCacheAsync( $"country:{name}" );
@@ -118,9 +118,9 @@ public class CountriesController : ControllerBase
     }
     
     [HttpDelete("name:string")]
-    public async Task<IActionResult> DeleteCountry(string countryName)
+    public async Task<IActionResult> DeleteCountry(string countryName, CancellationToken cancellationToken)
     {
-        var deleted = await _countryService.DeleteCountryAsync(countryName);
+        var deleted = await _countryService.DeleteCountryAsync(countryName, cancellationToken);
         
         // Cache invalidation
         await _redisService.InvalidateCacheAsync("country_all");
