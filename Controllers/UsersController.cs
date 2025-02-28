@@ -8,11 +8,11 @@ namespace ProvEditorNET.Controllers;
 
 [ApiController]
 [Route($"{ApiEndpoints.ApiBase}/[controller]")]
-public class IdentityController : ControllerBase
+public class UsersController : ControllerBase
 {
     private readonly IIdentityService _identityService;
     
-    public IdentityController(IIdentityService identityService)
+    public UsersController(IIdentityService identityService)
     {
         _identityService = identityService;
     }
