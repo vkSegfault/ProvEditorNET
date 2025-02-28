@@ -29,7 +29,6 @@ public class RolesController : ControllerBase
     
     [HttpGet("{email}")]   // we dont use {email:string} because string is default route type constraint
     // [ActionName("GetUserRoles")]
-    [AllowAnonymous] // TODO - remove allowAnonymous
     public async Task<ActionResult<IEnumerable<RoleDto>>> GetUserRoles([FromRoute] string email)
     {
         if (email is not null)
@@ -54,7 +53,6 @@ public class RolesController : ControllerBase
     
     [HttpDelete]
     // [ActionName("Delete")]
-    [AllowAnonymous] // TODO - remove allowAnonymous
     public async Task<ActionResult> DeleteRole([FromBody] RoleDto roleDto)
     {
         bool deleted = await _identityService.DeleteRoleAsync(roleDto.RoleName);
@@ -81,7 +79,6 @@ public class RolesController : ControllerBase
     
     [HttpDelete("user")]
     // [ActionName("RemoveUserFromRole")]
-    [AllowAnonymous] // TODO - remove allowAnonymous
     public async Task<ActionResult> RemoveUserFromRole([FromQuery] string email, [FromQuery] string roleName)
     {
         if (email is null)
