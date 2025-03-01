@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ProvEditorNET.DTO;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
 using ProvEditorNET.Repository;
@@ -50,7 +51,7 @@ public class ProvinceService : IProvinceService
         return (true, "success");
     }
     
-    public async Task<IEnumerable<Province>> GetAllProvincesAsync(int limit = 0, string limitCountry = null, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Province>> GetAllProvincesAsync(GetAllProvincesOptionsDto options, CancellationToken cancellationToken = default)
     {
         var provincesIncludable = _context.Provinces
             .Include(p => p.Country)
@@ -61,17 +62,44 @@ public class ProvinceService : IProvinceService
         // TODO
         // this condition based Collection building is hacky as fuck - refactor it to something else
         IQueryable<Province> provincesQueryable = null;
-        if (limit != 0)
-        {
-            provincesQueryable = provincesIncludable.Take(limit);
-        }
         
-        if (!string.IsNullOrEmpty(limitCountry))
+        // ORDERING of filters matters - if we first e.g.: limit number of results we won't check .StartsWith() on all collection
+        // .limit() should be last
+        if (!string.IsNullOrEmpty(options.limitToCountry))
         {
-            provincesQueryable = provincesIncludable.Where(p => p.Country.Name == limitCountry);
+            if (provincesQueryable != null)
+            {
+                provincesQueryable = provincesQueryable.Where(p => p.Country.Name == options.limitToCountry);
+            }
+            else
+            {
+                provincesQueryable = provincesIncludable.Where(p => p.Country.Name == options.limitToCountry);
+            }
         }
 
-        
+        if (!string.IsNullOrEmpty(options.startsWith))
+        {
+            if (provincesQueryable != null)
+            {
+                provincesQueryable = provincesQueryable.Where(p => p.Name.StartsWith(options.startsWith));
+            }
+            else
+            {
+                provincesQueryable = provincesIncludable.Where(p => p.Name.StartsWith(options.startsWith));
+            }
+        }
+
+        if (options.limit != 0)
+        {
+            if (provincesQueryable != null)
+            {
+                provincesQueryable = provincesQueryable.Take(options.limit);
+            }
+            else
+            {
+                provincesQueryable = provincesIncludable.Take(options.limit);
+            }
+        }
         
         if (provincesQueryable != null)   // limits applied
         {
