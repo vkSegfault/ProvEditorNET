@@ -92,19 +92,7 @@ public class ProvinceService : IProvinceService
                 provincesQueryable = provincesIncludable.Where(p => p.Name.StartsWith(options.startsWith));
             }
         }
-
-        if (options.pageSize != 0)
-        {
-            if (provincesQueryable != null)
-            {
-                provincesQueryable = provincesQueryable.Take(options.pageSize);
-            }
-            else
-            {
-                provincesQueryable = provincesIncludable.Take(options.pageSize);
-            }
-        }
-        
+                
         if (options.sortByName)
         {
             if (provincesQueryable != null)
@@ -116,6 +104,31 @@ public class ProvinceService : IProvinceService
                 provincesQueryable = provincesIncludable.OrderBy(p => p.Name);
             }
         }
+        
+        if (options.page != 0)
+        {
+            if (provincesQueryable != null)
+            {
+                provincesQueryable = provincesQueryable.Skip( options.page * options.pageSize );
+            }
+            else
+            {
+                provincesQueryable = provincesIncludable.Skip( options.page * options.pageSize );
+            }
+        }
+        
+        if (options.pageSize != 0)
+        {
+            if (provincesQueryable != null)
+            {
+                provincesQueryable = provincesQueryable.Take(options.pageSize);
+            }
+            else
+            {
+                provincesQueryable = provincesIncludable.Take(options.pageSize);
+            }
+        }
+
         
         if (provincesQueryable != null)   // if any limits applied
         {
