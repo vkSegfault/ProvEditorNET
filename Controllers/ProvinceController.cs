@@ -39,7 +39,7 @@ public class ProvincesController: ControllerBase
     
     
     [HttpPost]
-    public async Task<ActionResult<Province>> CreateProvince([FromBody] ProvinceRequestDto provinceRequestDto)
+    public async Task<ActionResult<Province>> CreateProvince([FromBody] CreateProvinceRequestDto provinceRequestDto)
     {
         Country country = await _countryService.GetCountryByNameAsync(provinceRequestDto.CountryName);
         if (country is null)
@@ -84,9 +84,9 @@ public class ProvincesController: ControllerBase
     
     [HttpGet]
     // [Route("all")]
-    public async Task<ActionResult<List<String>>> GetAllProvinces()
+    public async Task<ActionResult<List<String>>> GetAllProvinces( [FromQuery] int limit, [FromQuery] string limitCountry, CancellationToken cancellationToken )
     {
-        var provinces = await _provinceService.GetAllProvincesAsync();
+        var provinces = await _provinceService.GetAllProvincesAsync(limit, limitCountry, cancellationToken);
         var provincesResponseDto = provinces.Select(p => p.ToProvinceResponseDto());
 
         // TODO - remove thread sleep - just used for testing frontend delays

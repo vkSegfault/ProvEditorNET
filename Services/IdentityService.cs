@@ -111,7 +111,6 @@ public class IdentityService : IIdentityService
                 Console.WriteLine( "Principal is NULL" );
                 return null;
             }
-            return null;
         }
         
     }

@@ -50,14 +50,43 @@ public class ProvinceService : IProvinceService
         return (true, "success");
     }
     
-    public async Task<IEnumerable<Province>> GetAllProvincesAsync()
+    public async Task<IEnumerable<Province>> GetAllProvincesAsync(int limit = 0, string limitCountry = null, CancellationToken cancellationToken = default)
     {
-        var provinces = await _context.Provinces
+        var provincesIncludable = _context.Provinces
             .Include(p => p.Country)
             .Include(p => p.Infrastructures)
-            .Include(p => p.Resources)
-            .ToListAsync();
-        return provinces;
+            .Include(p => p.Resources);
+
+        
+        // TODO
+        // this condition based Collection building is hacky as fuck - refactor it to something else
+        IQueryable<Province> provincesQueryable = null;
+        if (limit != 0)
+        {
+            provincesQueryable = provincesIncludable.Take(limit);
+        }
+        
+        if (!string.IsNullOrEmpty(limitCountry))
+        {
+            provincesQueryable = provincesIncludable.Where(p => p.Country.Name == limitCountry);
+        }
+
+        
+        
+        if (provincesQueryable != null)   // limits applied
+        {
+            var provinces = await provincesQueryable
+                .OrderByDescending(p => p.Name)
+                .ToListAsync(cancellationToken);
+            return provinces;
+        }
+        else   // no limits applied
+        {
+            var provinces = await provincesIncludable
+                .OrderByDescending(p => p.Name)
+                .ToListAsync(cancellationToken);
+            return provinces;
+        }
     }
 
     public async Task<Province> GetProvinceByNameAsync(string provinceName)
