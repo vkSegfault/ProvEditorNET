@@ -101,7 +101,19 @@ public class ProvinceService : IProvinceService
             }
         }
         
-        if (provincesQueryable != null)   // limits applied
+        if (options.sortByName)
+        {
+            if (provincesQueryable != null)
+            {
+                provincesQueryable = provincesQueryable.OrderBy(p => p.Name);
+            }
+            else
+            {
+                provincesQueryable = provincesIncludable.OrderBy(p => p.Name);
+            }
+        }
+        
+        if (provincesQueryable != null)   // if any limits applied
         {
             var provinces = await provincesQueryable
                 .OrderByDescending(p => p.Name)
