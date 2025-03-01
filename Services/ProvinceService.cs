@@ -13,12 +13,14 @@ public class ProvinceService : IProvinceService
     private readonly ProvinceDbContext _context;
     private readonly IIdentityService _identityService;
     private readonly IValidator<Province> _provinceValidator;
+    private readonly IValidator<GetAllProvincesOptionsDto> _provincesOptionsValidator;
 
-    public ProvinceService(ProvinceDbContext context, IIdentityService identityService, IValidator<Province> provinceValidator)
+    public ProvinceService(ProvinceDbContext context, IIdentityService identityService, IValidator<Province> provinceValidator, IValidator<GetAllProvincesOptionsDto> provincesOptionsValidator)
     {
         _context = context;
         _identityService = identityService;
         _provinceValidator = provinceValidator;
+        _provincesOptionsValidator = provincesOptionsValidator;
     }
 
     public async Task<(bool success, string msg)> CreateAsync(Province province)
@@ -53,6 +55,8 @@ public class ProvinceService : IProvinceService
     
     public async Task<IEnumerable<Province>> GetAllProvincesAsync(GetAllProvincesOptionsDto options, CancellationToken cancellationToken = default)
     {
+        await _provincesOptionsValidator.ValidateAndThrowAsync(options, cancellationToken);
+        
         var provincesIncludable = _context.Provinces
             .Include(p => p.Country)
             .Include(p => p.Infrastructures)
@@ -89,15 +93,15 @@ public class ProvinceService : IProvinceService
             }
         }
 
-        if (options.limit != 0)
+        if (options.pageSize != 0)
         {
             if (provincesQueryable != null)
             {
-                provincesQueryable = provincesQueryable.Take(options.limit);
+                provincesQueryable = provincesQueryable.Take(options.pageSize);
             }
             else
             {
-                provincesQueryable = provincesIncludable.Take(options.limit);
+                provincesQueryable = provincesIncludable.Take(options.pageSize);
             }
         }
         

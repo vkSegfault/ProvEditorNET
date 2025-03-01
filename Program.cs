@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using ProvEditorNET.DTO;
 using ProvEditorNET.Extensions;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
@@ -34,6 +35,7 @@ builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IResourceService, ResourceService>();
 builder.Services.AddScoped<IInfrastructureService, InfrastructureService>();
 builder.Services.AddScoped<IValidator<Province>, ProvinceValidator>();
+builder.Services.AddScoped<IValidator<GetAllProvincesOptionsDto>, GetAllProvinceOptionsDtoValidator>();
 
 // builder.Services.AddEndpointsApiExplorer();
 
