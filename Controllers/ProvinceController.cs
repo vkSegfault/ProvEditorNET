@@ -84,9 +84,9 @@ public class ProvincesController: ControllerBase
     
     [HttpGet]
     // [Route("all")]
-    public async Task<ActionResult<List<String>>> GetAllProvinces( [FromQuery] int limit, [FromQuery] string limitCountry, CancellationToken cancellationToken )
+    public async Task<ActionResult<List<String>>> GetAllProvinces( [FromQuery] GetAllProvincesOptionsDto options, CancellationToken cancellationToken )
     {
-        var provinces = await _provinceService.GetAllProvincesAsync(limit, limitCountry, cancellationToken);
+        var provinces = await _provinceService.GetAllProvincesAsync(options, cancellationToken);
         var provincesResponseDto = provinces.Select(p => p.ToProvinceResponseDto());
 
         // TODO - remove thread sleep - just used for testing frontend delays
