@@ -11,6 +11,7 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using ProvEditorNET.DTO;
 using ProvEditorNET.Extensions;
+using ProvEditorNET.Healthchecks;
 using ProvEditorNET.Interfaces;
 using ProvEditorNET.Models;
 using ProvEditorNET.Repository;
@@ -26,6 +27,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
+builder.Services.AddHealthChecks().AddCheck<DbHealthcheck>("DB Healthcheck");
+builder.Services.AddLogging();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IGoogleAuth, GoogleAuth>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
@@ -37,8 +40,8 @@ builder.Services.AddScoped<IInfrastructureService, InfrastructureService>();
 builder.Services.AddScoped<IValidator<Province>, ProvinceValidator>();
 builder.Services.AddScoped<IValidator<GetAllProvincesOptionsDto>, GetAllProvinceOptionsDtoValidator>();
 
-// builder.Services.AddEndpointsApiExplorer();
 
+// builder.Services.AddEndpointsApiExplorer();
 // now Open API specs are here: http://localhost:5077/openapi/v1.json
 builder.Services.AddOpenApi("v1", options =>
 {
@@ -196,6 +199,7 @@ else
 }
 
 
+app.MapHealthChecks("_health");
 app.MapPrometheusScrapingEndpoint();  // expose endpoint for Promoetheus (http://<HOST>:<PORT>/metrics)
 app.MapGroup("api/v1/auth").MapIdentityApi<IdentityUser>();   // used for crude Authorization directly from Identity package (without any custom changes)
 // app.MapIdentityApi<User>();
