@@ -29,6 +29,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks().AddCheck<DbHealthcheck>("DB Healthcheck");
 builder.Services.AddLogging();
+builder.Services.AddResponseCaching();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IGoogleAuth, GoogleAuth>();
 builder.Services.AddScoped<IIdentityService, IdentityService>();
@@ -200,6 +201,7 @@ else
 
 
 app.MapHealthChecks("_health");
+app.UseResponseCaching();   // if using app.UseCors(); then UseCors() should be before UseResponseCaching()!
 app.MapPrometheusScrapingEndpoint();  // expose endpoint for Promoetheus (http://<HOST>:<PORT>/metrics)
 app.MapGroup("api/v1/auth").MapIdentityApi<IdentityUser>();   // used for crude Authorization directly from Identity package (without any custom changes)
 // app.MapIdentityApi<User>();

@@ -43,6 +43,7 @@ public class CountriesController : ControllerBase
     }
     
     [HttpGet]
+    [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, VaryByHeader = "Accept, Accept-Encoding")]
     // [Route("all")]
     public async Task<IActionResult> GetAllCountries(CancellationToken cancellationToken)
     {
@@ -73,6 +74,7 @@ public class CountriesController : ControllerBase
 
     [HttpGet]
     [Route("{name}")]
+    [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, VaryByHeader = "Accept, Accept-Encoding")]
     public async Task<IActionResult> GetCountryByName(string name, CancellationToken cancellationToken)
     {
         string redisKey = $"country:{name}";
