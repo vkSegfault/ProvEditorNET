@@ -246,7 +246,7 @@ public class IdentityService : IIdentityService
         }
     }
     
-    // NOTE that we add users to Roles, not other way around
+    // NOTE that we add users to Roles, not the other way around
     public IQueryable<IdentityRole> GetAllRoles()
     {
         IQueryable<IdentityRole> roles = _roleManager.Roles;
