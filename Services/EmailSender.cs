@@ -17,6 +17,8 @@ public class EmailSender : IEmailSender
     {
         // Visit https://app.sendgrid.com/ for config and more
         // TODO - dotnet secret manager is only for development use KeyVault or something for prod
+        // NOTE - _configuration service tries to fetch config/keys from both secret manager and appsettings.json 
+        // string link = $"{_configuration.GetValue<string>("Host:Dev")}/api/v1/auth/confirmemailcustom?email={email}&token={confirmEmailTokenEncoded}";
         var sendGridApiKey = _configuration["Authentication:SendGrid:ApiKey"];
         var client = new SendGridClient(sendGridApiKey);
         var from = new EmailAddress("adtofaust@gmail.com", "ProvEditor");
