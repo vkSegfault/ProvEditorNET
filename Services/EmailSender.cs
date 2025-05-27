@@ -20,6 +20,7 @@ public class EmailSender : IEmailSender
         // NOTE - _configuration service tries to fetch config/keys from both secret manager and appsettings.json 
         // string link = $"{_configuration.GetValue<string>("Host:Dev")}/api/v1/auth/confirmemailcustom?email={email}&token={confirmEmailTokenEncoded}";
         var sendGridApiKey = _configuration["Authentication:SendGrid:ApiKey"];
+        Console.WriteLine($"SendGrid: {sendGridApiKey}");
         var client = new SendGridClient(sendGridApiKey);
         var from = new EmailAddress("adtofaust@gmail.com", "ProvEditor");
         // ProvEditor must be only accessible by handful of people so every new user must be approved by admin (here me)
